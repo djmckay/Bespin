@@ -27,7 +27,7 @@ final class MessagesTests: XCTestCase {
         //headers = app.defaultHeaders()
         
         let user = try! User.create(domain: "sandbox1ae25b0dd717479699708a4953bcec8a.mailgun.org", on: conn)
-        let token = Token(token: "482e2034eac8deec40b5cf3d931a9d5e-4836d8f5-68add71a", userID: user.id!)
+        let token = Token(token: "<apikey>", userID: user.id!)
         try! token.save(on: conn).wait()
         
         uri = "/api/\(token.id!.uuidString)/messages/"
@@ -117,7 +117,7 @@ final class MessagesTests: XCTestCase {
         )
         
         let user = try! User.create(username: "testAPICanSendMessageWithVariablesFailsBadDomain", domain: "sandbox1ae25b0dd717479699708a4953bcec8a.mailgun.org", on: conn)
-        let token = Token(token: "482e2034eac8deec40b5cf3d931a9d5e-4836d8f5-68add71a", userID: user.id!)
+        let token = Token(token: "<apikey>", userID: user.id!)
         try! token.save(on: conn).wait()
         
         let uri = "/api/\(token.id!.uuidString)/messages/"
