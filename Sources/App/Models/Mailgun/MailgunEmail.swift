@@ -57,29 +57,27 @@ public struct MailgunEmail: Content {
         self.attachments = attachments
         if let data = try? JSONEncoder().encode(recipientVariables) {
             self.recipientVariables = String(data: data, encoding: .utf8)!
-            do {
-                let textTemplate = try Template(string: text ?? "")
-                let htmlTemplate = try Template(string: html ?? "")
-                // Let template format dates with `{{format(...)}}`
-                let dateFormatter = MyDateFormatter()
-                dateFormatter.dateStyle = .medium
-                textTemplate.register(dateFormatter, forKey: "format")
-                htmlTemplate.register(dateFormatter, forKey: "format")
-//                self.text = try textTemplate.render(mustacheData)
-//                self.html = try htmlTemplate.render(mustacheData)
-                if let data2 = mustacheData?.data(using: .utf8) {
-                    if let jsonRaw = try? JSONSerialization.jsonObject(with: data2) {
-                        if let json = jsonRaw as? [String : Any] {
-                            self.text = try textTemplate.render(json)
-                            self.html = try htmlTemplate.render(json)
-                        }
-                    }
-                }
-                
-                
-            } catch {
-                print(error.localizedDescription)
-            }
+//            do {
+//                let textTemplate = try Template(string: text ?? "")
+//                let htmlTemplate = try Template(string: html ?? "")
+//                // Let template format dates with `{{format(...)}}`
+//                let dateFormatter = MyDateFormatter()
+//                dateFormatter.dateStyle = .medium
+//                textTemplate.register(dateFormatter, forKey: "format")
+//                htmlTemplate.register(dateFormatter, forKey: "format")
+//                if let data2 = mustacheData?.data(using: .utf8) {
+//                    if let jsonRaw = try? JSONSerialization.jsonObject(with: data2) {
+//                        if let json = jsonRaw as? [String : Any] {
+//                            self.text = try textTemplate.render(json)
+//                            self.html = try htmlTemplate.render(json)
+//                        }
+//                    }
+//                }
+//                
+//                
+//            } catch {
+//                print(error.localizedDescription)
+//            }
         }
         
     }

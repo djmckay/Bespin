@@ -65,15 +65,6 @@
         }
       },
       {
-        "package": "Mustache",
-        "repositoryURL": "https://github.com/djmckay/GRMustache.swift",
-        "state": {
-          "branch": null,
-          "revision": "9f141416723a59af15836e93c28f2e74cc5fa0a0",
-          "version": "2.0.0"
-        }
-      },
-      {
         "package": "HTTP",
         "repositoryURL": "https://github.com/vapor/http.git",
         "state": {
@@ -107,6 +98,15 @@
           "branch": null,
           "revision": "e57007c23a52b68e44ebdfc70cbe882a7c4f1ec3",
           "version": "3.0.2"
+        }
+      },
+      {
+        "package": "Mustache",
+        "repositoryURL": "https://github.com/LoganWright/Mustache.git",
+        "state": {
+          "branch": null,
+          "revision": "abe2dc8609d4933da484ed128c1b786e0ec7a6c2",
+          "version": "0.10.0"
         }
       },
       {
