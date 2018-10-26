@@ -30,7 +30,7 @@ struct TokensController: BespinController {
         //        tokenAuthGroup.get(use: getAllHandler)
         //        tokenAuthGroup.get(User.parameter, use: getAllHandler)
         
-        route.post(Token.self, use: createHandler)
+        //route.post(Token.self, use: createHandler)
         
     }
     

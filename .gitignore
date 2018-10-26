@@ -6,3 +6,4 @@ DerivedData/
 .DS_Store
 Tests/AppTests/MustacheTests.swift
 Sources/App/Framework/Mustache/**
+cloud.yml

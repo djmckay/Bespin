@@ -33,7 +33,8 @@ struct UsersController: BespinController {
         //        tokenAuthGroup.get(User.parameter, use: getAllHandler)
         
         usersRoute.post(User.self, use: createHandler)
-        
+        let protectedRoutes = usersRoute.grouped(AdminJWTMiddleWareProvider())
+        protectedRoutes.get(use: getAllHandler)
     }
     
     func createHandler(_ req: Request, entity: User) throws -> Future<Public> {

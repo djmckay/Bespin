@@ -95,6 +95,52 @@ final class UserTests: XCTestCase {
         XCTAssertTrue(receivedUser2.http.status == .internalServerError)
     }
     
+    func testAdminCanGetAllUsersWithAPI() throws {
+        let password = try BCrypt.hash("myPassword")
+        let user = try User(name: "testapi", username: "testapi", password: password, domain: "domain.example.com").save(on: conn).wait()
+        let user2 = try User(name: "testapi2", username: "testapi2", password: password, domain: "domain.example.com").save(on: conn).wait()
+        
+        // create payload
+        let adminToken = AdminToken(key: "1234567890987654321")
+        
+        // create JWT and sign
+        let jwt = try! JWT(payload: adminToken).sign(using: .hs256(key: "secret"))
+        headers = HTTPHeaders()
+        headers.add(name: .authorization, value: "Bearer \(String(data: jwt, encoding: .utf8) ?? "")")
+        headers.add(name: "Content-Type", value: "application/json")
+        
+        let users = try app.getResponse(to: uri, headers: headers, decodeTo: [User.Public].self)
+        
+        XCTAssertEqual(users.count, 2)
+    }
+    
+    func testAdminCanGetAllUsersWithAPIFailsJWT() throws {
+        let password = try BCrypt.hash("myPassword")
+        let user = try User(name: "testapi", username: "testapi", password: password, domain: "domain.example.com").save(on: conn).wait()
+        let user2 = try User(name: "testapi2", username: "testapi2", password: password, domain: "domain.example.com").save(on: conn).wait()
+        
+        // create payload
+        let adminToken = AdminToken(key: "1234567890987654321")
+        
+        // create JWT and sign
+        let jwt = try! JWT(payload: adminToken).sign(using: .hs256(key: "secret1"))
+        headers = HTTPHeaders()
+        headers.add(name: .authorization, value: "Bearer \(String(data: jwt, encoding: .utf8) ?? "")")
+        headers.add(name: "Content-Type", value: "application/json")
+        do {
+            let users = try app.sendRequest(to: uri, method: .GET, headers: headers)
+            print(users.http.status)
+            if users.http.status != .unauthorized {
+                XCTFail()
+            }
+            
+        } catch {
+            print(error)
+            XCTFail()
+        }
+        
+    }
+    
 //    func testUserCanGenerateAPIKey() throws {
 //        let user = User(name: "testapi", username: "testapi", password: "myPassword", domain: "domain.example.com")
 //        

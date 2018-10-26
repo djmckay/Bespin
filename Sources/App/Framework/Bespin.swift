@@ -8,6 +8,7 @@
 import Foundation
 import Vapor
 import FluentMySQL
+import JWT
 
 struct Bespin {
     static fileprivate let DatabaseUsername: String = Environment.get("DATABASE_USER") ?? "bespin"
@@ -70,6 +71,10 @@ public final class BespinErrorMiddleware: Middleware, ServiceType {
                 // this is a validation error
                 reason = validation.reason
                 status = .badRequest
+                headers = [:]
+            case let jwtError as JWTError:
+                reason = jwtError.reason
+                status = .unauthorized
                 headers = [:]
             case let debuggable as Debuggable where !environment.isRelease:
                 // if not release mode, and error is debuggable, provide debug
