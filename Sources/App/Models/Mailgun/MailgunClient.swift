@@ -18,9 +18,11 @@ public final class MailgunClient: Service {
 //        self.apiKey = apiKey
 //        self.domain = domain
 //    }
+    var logger: Logger
     
-    public init(client: Client) {
+    public init(client: Client, logger: Logger) {
         self.httpClient = client
+        self.logger = logger
     }
     
     public func send(apiKey: String, domain: String, _ email: MailgunEmail, on worker: Worker) throws -> Future<Response> {
@@ -92,6 +94,7 @@ public final class MailgunClient: Service {
     }
     
     private func process(_ response: Response) throws -> Response {
+        logger.verbose("[\(Date())] MailgunClient processing: \(response.http.status)")
         switch true {
         case response.http.status.code == HTTPStatus.ok.code:
             return response

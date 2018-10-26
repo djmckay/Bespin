@@ -13,6 +13,8 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
 //    services.register(mailConfig)
     try services.register(MailgunProvider())
     try services.register(LeafProvider())
+    services.register(BespinErrorMiddleware.self)
+    services.register(LoggerMiddleware.self)
     services.register { container -> LeafTagConfig in
         var config = LeafTagConfig.default()
         config.use(DateFormat(), as: "formatDate")
@@ -28,8 +30,9 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     /// Register middleware
     var middlewares = MiddlewareConfig() // Create _empty_ middleware config
     /// middlewares.use(FileMiddleware.self) // Serves files from `Public/` directory
-    middlewares.use(ErrorMiddleware.self) // Catches errors and converts to HTTP response
+    middlewares.use(BespinErrorMiddleware.self) // Catches errors and converts to HTTP response
     middlewares.use(PrivateFileMiddleware.self)
+    middlewares.use(LoggerMiddleware.self)
 //    middlewares.use(BasicAuthenticationMiddleware<User>.self)
     services.register(middlewares)
     // Configure a MySQL database
