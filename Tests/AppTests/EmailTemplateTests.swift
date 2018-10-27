@@ -21,6 +21,7 @@ final class EmailTemplateTests: XCTestCase {
     let expectedName = "Template1"
     let expectedText = "Hello this is text"
     let expectedHtml = "<b>Hello this is html</b>"
+    var user: User!
     
     override func setUp() {
         try! Application.reset()
@@ -28,6 +29,7 @@ final class EmailTemplateTests: XCTestCase {
         conn = try! app.newConnection(to: .Bespin).wait()
         //headers = app.defaultHeaders()
         let token = try? Token.generate(on: conn)
+        user = try? token!.user.query(on: conn).first().wait()!
         uri = "/api/\(token!.id!.uuidString)/templates/"
         
         // create payload
@@ -47,11 +49,11 @@ final class EmailTemplateTests: XCTestCase {
     
     func testsEmailTemplatesCanBeRetrievedFromAPI() throws {
         
-        let template = EmailTemplate(name: expectedName, text: expectedText, html: expectedHtml)
+        let template = EmailTemplate(name: expectedName, text: expectedText, html: expectedHtml, userID: user.id!)
         
         let savedTemplate = try template.save(on: conn).wait()
         
-        _ = try EmailTemplate.create(on: conn)
+        _ = try EmailTemplate.create(user: user, on: conn)
  
         let templates = try app.getResponse(to: uri, headers: headers, decodeTo: [EmailTemplate].self)
         
@@ -64,7 +66,7 @@ final class EmailTemplateTests: XCTestCase {
     }
     
     func testTemplateCanBeSavedWithAPI() throws {
-        let template = EmailTemplate(name: "savedTemplate", text: "text for saved template", html: "html for saved template")
+        let template = EmailTemplate(name: "savedTemplate", text: "text for saved template", html: "html for saved template", userID: user.id!)
         
         let receivedTemplate = try app.getResponse(to: uri, method: .POST, headers: headers, data: template, decodeTo: EmailTemplate.self)
         
@@ -84,7 +86,7 @@ final class EmailTemplateTests: XCTestCase {
     
     func testGettingASingleUserFromTheAPI() throws {
         
-        let template = try EmailTemplate.create(name: expectedName, text: expectedText, html: expectedHtml, on: conn)
+        let template = try EmailTemplate.create(name: expectedName, text: expectedText, html: expectedHtml, user: user, on: conn)
         let receivedTemplate = try app.getResponse(to: "\(uri)\(template.id!)",headers: headers, decodeTo: EmailTemplate.self)
         
         XCTAssertEqual(receivedTemplate.name, expectedName)
@@ -95,7 +97,7 @@ final class EmailTemplateTests: XCTestCase {
     
     func testUpdatingASingleUserFromTheAPI() throws {
         
-        let template = try EmailTemplate.create(name: expectedName, text: expectedText, html: expectedHtml, on: conn)
+        let template = try EmailTemplate.create(name: expectedName, text: expectedText, html: expectedHtml, user: user, on: conn)
         let receivedTemplate = try app.getResponse(to: "\(uri)\(template.id!)",headers: headers, decodeTo: EmailTemplate.self)
         
         XCTAssertEqual(receivedTemplate.name, expectedName)
@@ -117,7 +119,7 @@ final class EmailTemplateTests: XCTestCase {
     
     func testsEmailTemplatesCanBeDeletedFromAPI() throws {
         
-        let template = try EmailTemplate.create(name: expectedName, text: expectedText, html: expectedHtml, on: conn)
+        let template = try EmailTemplate.create(name: expectedName, text: expectedText, html: expectedHtml, user: user, on: conn)
         var templates = try app.getResponse(to: uri,headers: headers, decodeTo: [EmailTemplate].self)
         
         XCTAssertEqual(templates.count, 1)
@@ -126,6 +128,24 @@ final class EmailTemplateTests: XCTestCase {
         templates = try app.getResponse(to: uri,headers: headers, decodeTo: [EmailTemplate].self)
         XCTAssertEqual(templates.count, 0)
         
+    }
+    
+    func testGetAllTemplatesWithAPI() throws {
+        let template = try EmailTemplate(name: "savedTemplate", text: "text for saved template", html: "html for saved template", userID: user.id!).save(on: conn).wait()
+        let template2 = try EmailTemplate(name: "savedTemplate2", text: "text for saved template 2", html: "html for saved template 2", userID: user.id!).save(on: conn).wait()
+        let template3 = try EmailTemplate(name: "savedTemplate3", text: "text for saved template 3", html: "html for saved template 3", userID: try User.create(username: "bespin2", on: conn).id!).save(on: conn).wait()
+        let templates = try app.getResponse(to: uri, headers: headers, decodeTo: [EmailTemplate].self)
+        
+        XCTAssertEqual(templates.count, 2)
+        XCTAssertEqual(templates[0].name, template.name)
+        XCTAssertEqual(templates[0].html, template.html)
+        XCTAssertEqual(templates[0].text, template.text)
+        XCTAssertEqual(templates[0].id, template.id)
+        
+        XCTAssertEqual(templates[1].name, template2.name)
+        XCTAssertEqual(templates[1].html, template2.html)
+        XCTAssertEqual(templates[1].text, template2.text)
+        XCTAssertEqual(templates[1].id, template2.id)
     }
     
 }

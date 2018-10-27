@@ -110,3 +110,15 @@ extension User: SessionAuthenticatable {}
 //    }
 //
 //}
+
+extension User {
+    var tokens: Children<User, Token> {
+        return children(\.userID)
+    }
+}
+
+extension User {
+    var templates: Children<User, EmailTemplate> {
+        return children(\.userID)
+    }
+}

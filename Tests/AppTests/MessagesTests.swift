@@ -18,7 +18,7 @@ final class MessagesTests: XCTestCase {
     var conn: MySQLConnection!
     var headers: HTTPHeaders!
     let testEmail = "testing@ibtuf.com"
-    
+    var user: User!
     
     override func setUp() {
         try! Application.reset()
@@ -26,10 +26,9 @@ final class MessagesTests: XCTestCase {
         conn = try! app.newConnection(to: .Bespin).wait()
         //headers = app.defaultHeaders()
         
-        let user = try! User.create(domain: "sandbox1ae25b0dd717479699708a4953bcec8a.mailgun.org", on: conn)
+        user = try! User.create(domain: "sandbox1ae25b0dd717479699708a4953bcec8a.mailgun.org", on: conn)
         let token = Token(token: "<apikey>", userID: user.id!)
         try! token.save(on: conn).wait()
-        
         uri = "/api/\(token.id!.uuidString)/messages/"
 
         // create payload
@@ -152,7 +151,7 @@ final class MessagesTests: XCTestCase {
         let expectedName = "Template1"
         let expectedText = "Hello this is template text for %recipient.name%"
         let expectedHtml = "<b>Hello this is template html for %recipient.name%</b>"
-        let template = try EmailTemplate.create(name: expectedName, text: expectedText, html: expectedHtml, on: conn)
+        let template = try EmailTemplate.create(name: expectedName, text: expectedText, html: expectedHtml, user: user, on: conn)
         let message = Message(
             from: EmailAddress(email: "mailgun@sandbox1ae25b0dd717479699708a4953bcec8a.mailgun.org"),
             to: [EmailAddress(email: testEmail)],
@@ -196,7 +195,7 @@ final class MessagesTests: XCTestCase {
         let expectedName = "Template1"
         let expectedText = "Hello {{name}} {{format(date)}} {{format(realDate)}}.  There are {{items.count}} item(s): {{#items}} {{name}} {{/items}}"
         let expectedHtml = "Hello {{name}} {{format(date)}} {{format(realDate)}}.  There are {{items.count}} item(s): {{#items}} {{name}} {{/items}}"
-        let template = try EmailTemplate.create(name: expectedName, text: expectedText, html: expectedHtml, on: conn)
+        let template = try EmailTemplate.create(name: expectedName, text: expectedText, html: expectedHtml, user: user, on: conn)
         let message = Message(
             from: EmailAddress(email: "mailgun@sandbox1ae25b0dd717479699708a4953bcec8a.mailgun.org"),
             to: [EmailAddress(email: testEmail)],

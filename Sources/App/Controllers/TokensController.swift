@@ -15,7 +15,7 @@ struct TokensController: BespinController {
     static var path = "tokens"
     
     func boot(router: Router) throws {
-        let route = router.grouped(BespinApi.path, TokensController.path)
+        let route = router.grouped(BespinApi.path, UsersController.path, User.parameter, TokensController.path)
         //        usersRoute.post(User.self, use: createHandler)
         //        usersRoute.get(use: getAllHandler)
         //        usersRoute.get(User.parameter, use: getAllHandler)
@@ -31,7 +31,12 @@ struct TokensController: BespinController {
         //        tokenAuthGroup.get(User.parameter, use: getAllHandler)
         
         //route.post(Token.self, use: createHandler)
-        
+        //let protectedRoutes = route.grouped(JWTMiddleWareProvider())
+        //protectedRoutes.post(User.parameter, use: getAllHandler)
+        let basicAuthMiddleware = User.basicAuthMiddleware(using: BCryptDigest())
+        let guardAuthMiddleware = User.guardAuthMiddleware()
+        let basicAuthGroup = route.grouped(basicAuthMiddleware, guardAuthMiddleware)
+        basicAuthGroup.get(use: getAllHandler)
     }
     
     func createHandler(_ req: Request, entity: Token) throws -> Future<Public> {
@@ -39,7 +44,12 @@ struct TokensController: BespinController {
     }
     
     func getAllHandler(_ req: Request) throws -> Future<[Public]> {
-        return T.query(on: req).decode(data: Public.self).all()
+        let id = try req.parameters.next(User.self)
+        return id.flatMap({ (user) -> EventLoopFuture<[Public]> in
+            return try user.tokens.query(on: req).decode(Public.self).all()
+            //return T.query(on: req).decode(data: Public.self).all()
+        })
+        
     }
     
     func getHandler(_ req: Request) throws -> Future<Public> {

@@ -7,10 +7,12 @@
 
 @testable import App
 import FluentMySQL
+import Vapor
+import Crypto
 
 extension EmailTemplate {
-    static func create(name: String = "otherTemplate", text: String = "Other text", html: String = "Other html", on connection: MySQLConnection) throws -> EmailTemplate {
-        let template = EmailTemplate(name: name, text: text, html: html)
+    static func create(name: String = "otherTemplate", text: String = "Other text", html: String = "Other html", user: User, on connection: MySQLConnection) throws -> EmailTemplate {
+        let template = EmailTemplate(name: name, text: text, html: html, userID: user.id!)
         return try template.save(on: connection).wait()
     }
 }
@@ -31,7 +33,8 @@ extension Token {
 
 extension User {
     static func create(name: String = "bespin", username: String = "bespin", password: String = "bespin", domain: String = "bespin.something.com", on connection: MySQLConnection) throws -> User {
-        let user = User(name: name, username: username, password: password, domain: domain)
+        let hashedPassword = try BCrypt.hash(password)
+        let user = User(name: name, username: username, password: hashedPassword, domain: domain)
         return try user.save(on: connection).wait()
     }
 }

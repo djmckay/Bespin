@@ -48,9 +48,11 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     services.register(databases)
     /// Configure migrations
     var migrations = MigrationConfig()
+    migrations.add(model: User.self, database: .Bespin)
     migrations.add(model: EmailTemplate.self, database: .Bespin)
     migrations.add(model: Token.self, database: .Bespin)
-    migrations.add(model: User.self, database: .Bespin)
+    migrations.add(migration: EmailTemplateAddUserRelationship.self, database: .Bespin)
+    migrations.add(migration: TokenAddUserRelationship.self, database: .Bespin)
     services.register(migrations)
 
     var commandConfig = CommandConfig.default()

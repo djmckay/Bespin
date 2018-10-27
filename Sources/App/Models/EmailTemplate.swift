@@ -20,11 +20,13 @@ final class EmailTemplate: BespinModel {
     var text: String
     var html: String
     var subject: String?
+    var userID: User.ID
     
-    init(name: String, text: String, html: String) {
+    init(name: String, text: String, html: String, userID: User.ID) {
         self.name = name
         self.text = text
         self.html = html
+        self.userID = userID
     }
     
     func convertToPublic() -> EmailTemplate {
@@ -42,6 +44,8 @@ extension EmailTemplate: Migration {
             builder.field(for: \.text, type: .longtext)
             builder.field(for: \.html, type: .longtext)
             builder.field(for: \.subject)
+            builder.field(for: \.userID)
+            builder.reference(from: \.userID, to: \User.id)
         })
     }
     

@@ -50,4 +50,23 @@ struct AddTextHtmlColumnAsLongText: Migration {
     
 }
 
+struct EmailTemplateAddUserRelationship: Migration {
+    static func prepare(on conn: MySQLConnection) -> EventLoopFuture<Void> {
+        return MySQLDatabase.update(EmailTemplate.self, on: conn, closure: { (builder) in
+            builder.field(for: \.userID)
+            builder.reference(from: \.userID, to: \User.id)
+        })
+    }
+    
+    static func revert(on conn: MySQLConnection) -> EventLoopFuture<Void> {
+        return MySQLDatabase.update(EmailTemplate.self, on: conn, closure: { (builder) in
+            builder.deleteField(for: \.userID)
+        })
+    }
+    
+    typealias Database = MySQLDatabase
+    
+    
+}
+
 

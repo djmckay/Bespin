@@ -26,6 +26,7 @@ struct EmailTemplateController: BespinController {
         return try req.parameters.next(Token.self).flatMap({ (token) -> EventLoopFuture<EmailTemplate> in
             let jwt = try JWT<WebToken>(from: bearer.token, verifiedUsing: .hs256(key: token.token))
             print(jwt.payload.domain)
+            entity.userID = token.userID
             return entity.save(on: req).convertToPublic()
         })
         
@@ -33,9 +34,17 @@ struct EmailTemplateController: BespinController {
     }
     
     func getAllHandler(_ req: Request) throws -> EventLoopFuture<[EmailTemplate]> {
-        let id = try req.parameters.next(Token.self)
-        print(id)
-        return T.query(on: req).decode(data: Public.self).all()
+        return try req.parameters.next(Token.self).flatMap({ (token) -> EventLoopFuture<[EmailTemplate]> in
+            return token.user.get(on: req).flatMap({ (user) -> EventLoopFuture<[EmailTemplate]> in
+                return try user.templates.query(on: req).all()
+                //return T.query(on: req).decode(data: Public.self).all()
+            })
+        })
+        
+        //EmailTemplate.find(id, on: req).flatMap({ (template) -> EventLoopFuture<Response> in
+//        let id = try req.parameters.next(Token.self)
+//        print(id)
+        
     }
     
     func getHandler(_ req: Request) throws -> EventLoopFuture<EmailTemplate> {
