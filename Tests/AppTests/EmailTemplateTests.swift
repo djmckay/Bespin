@@ -117,6 +117,30 @@ final class EmailTemplateTests: XCTestCase {
         XCTAssertEqual(updatedTemplate.id, receivedTemplate.id)
     }
     
+    func testUpdatingASingleTemplateWithSubjectFromTheAPI() throws {
+        
+        let template = try EmailTemplate.create(name: expectedName, text: expectedText, html: expectedHtml, user: user, on: conn)
+        let receivedTemplate = try app.getResponse(to: "\(uri)\(template.id!)",headers: headers, decodeTo: EmailTemplate.self)
+        
+        XCTAssertEqual(receivedTemplate.name, expectedName)
+        XCTAssertEqual(receivedTemplate.text, expectedText)
+        XCTAssertEqual(receivedTemplate.html, expectedHtml)
+        XCTAssertEqual(receivedTemplate.id, template.id)
+        
+        receivedTemplate.text = "Updated Text"
+        receivedTemplate.html = "Updated HTML"
+        receivedTemplate.name = "Updated Name"
+        receivedTemplate.subject = "Updated Subject"
+        
+        let updatedTemplate = try app.getResponse(to: "\(uri)\(template.id!)", method: .PUT, headers: headers, data: receivedTemplate, decodeTo: EmailTemplate.self)
+        
+        XCTAssertEqual(updatedTemplate.name, receivedTemplate.name)
+        XCTAssertEqual(updatedTemplate.text, receivedTemplate.text)
+        XCTAssertEqual(updatedTemplate.html, receivedTemplate.html)
+        XCTAssertEqual(updatedTemplate.subject, receivedTemplate.subject)
+        XCTAssertEqual(updatedTemplate.id, receivedTemplate.id)
+    }
+    
     func testsEmailTemplatesCanBeDeletedFromAPI() throws {
         
         let template = try EmailTemplate.create(name: expectedName, text: expectedText, html: expectedHtml, user: user, on: conn)

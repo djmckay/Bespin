@@ -62,6 +62,7 @@ struct EmailTemplateController: BespinController {
                             item.name = updatedItem.name
                             item.text = updatedItem.text
                             item.html = updatedItem.html
+                            item.subject = updatedItem.subject
                             return item.save(on: req)
         }
     }

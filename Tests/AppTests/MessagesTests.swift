@@ -19,15 +19,17 @@ final class MessagesTests: XCTestCase {
     var headers: HTTPHeaders!
     let testEmail = "testing@ibtuf.com"
     var user: User!
+    var apiKey: String!
     
     override func setUp() {
         try! Application.reset()
         app = try! Application.testable()
         conn = try! app.newConnection(to: .Bespin).wait()
         //headers = app.defaultHeaders()
-        
+        let testBundle = Bundle(for: AppTests.self)
+        apiKey = testBundle.infoDictionary?["MG_API_AUTHORIZE_KEY"] as? String ?? "<apikey>"
         user = try! User.create(domain: "sandbox1ae25b0dd717479699708a4953bcec8a.mailgun.org", on: conn)
-        let token = Token(token: "<apikey>", userID: user.id!)
+        let token = Token(token: apiKey, userID: user.id!)
         try! token.save(on: conn).wait()
         uri = "/api/\(token.id!.uuidString)/messages/"
 
@@ -116,7 +118,7 @@ final class MessagesTests: XCTestCase {
         )
         
         let user = try! User.create(username: "testAPICanSendMessageWithVariablesFailsBadDomain", domain: "sandbox1ae25b0dd717479699708a4953bcec8a.mailgun.org", on: conn)
-        let token = Token(token: "<apikey>", userID: user.id!)
+        let token = Token(token: apiKey, userID: user.id!)
         try! token.save(on: conn).wait()
         
         let uri = "/api/\(token.id!.uuidString)/messages/"

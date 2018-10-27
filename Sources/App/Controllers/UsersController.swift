@@ -23,7 +23,8 @@ struct UsersController: BespinController {
         let guardAuthMiddleware = User.guardAuthMiddleware()
         let basicAuthGroup = usersRoute.grouped(basicAuthMiddleware, guardAuthMiddleware)
         basicAuthGroup.post(Token.self, at: User.parameter, "generateApiKey", use: generateApiKey)
-
+        basicAuthGroup.get(User.parameter, use: getHandler)
+        basicAuthGroup.get("login", use: loginHandler)
         //let basicAuthGroup = usersRoute.grouped(basicAuthMiddleware)
         //
 //                let tokenAuthMiddleware = User.tokenAuthMiddleware()
@@ -56,10 +57,9 @@ struct UsersController: BespinController {
         return token.save(on: req)
     }
     
-    func loginHandler(_ req: Request) throws -> Future<Token> {
+    func loginHandler(_ req: Request) throws -> Public {
         let user = try req.requireAuthenticated(User.self)
-        let token = try Token.generate(for: user)
-        return token.save(on: req)
+        return user.convertToPublic()
     }
     
     func updateHandler(_ req: Request) throws -> EventLoopFuture<User.Public> {

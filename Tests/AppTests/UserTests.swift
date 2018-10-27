@@ -79,6 +79,38 @@ final class UserTests: XCTestCase {
 
     }
     
+    func testGetUserWithAPI() throws {
+        let password = try BCrypt.hash("myPassword")
+        let user = try User(name: "testapi", username: "testapi", password: password, domain: "domain.example.com").save(on: conn).wait()
+        let creds = BasicAuthorization(username: user.username, password: "myPassword")
+        headers.basicAuthorization = creds
+        
+        let receivedUser = try app.getResponse(to: uri+user.id!.uuidString, method: .GET, headers: headers, decodeTo: User.Public.self)
+        
+        XCTAssertEqual(receivedUser.name, user.name)
+        XCTAssertEqual(receivedUser.username, user.username)
+        XCTAssertEqual(receivedUser.domain, user.domain)
+        XCTAssertNotNil(receivedUser.id)
+        
+        
+    }
+    
+    func testLoginUserWithAPI() throws {
+        let password = try BCrypt.hash("myPassword")
+        let user = try User(name: "testapi", username: "testapi", password: password, domain: "domain.example.com").save(on: conn).wait()
+        let creds = BasicAuthorization(username: user.username, password: "myPassword")
+        headers.basicAuthorization = creds
+        
+        let receivedUser = try app.getResponse(to: uri+"login", method: .GET, headers: headers, decodeTo: User.Public.self)
+        
+        XCTAssertEqual(receivedUser.name, user.name)
+        XCTAssertEqual(receivedUser.username, user.username)
+        XCTAssertEqual(receivedUser.domain, user.domain)
+        XCTAssertNotNil(receivedUser.id)
+        
+        
+    }
+    
     func testUserCanBeSavedWithAPIFails() throws {
         let user = User(name: "testapi", username: "testapi", password: "myPassword", domain: "domain.example.com")
         

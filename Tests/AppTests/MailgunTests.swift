@@ -28,7 +28,8 @@ final class MailgunTests: XCTestCase {
         headers = HTTPHeaders()
         headers.add(name: "Content-Type", value: "application/json")
         domain = "sandbox1ae25b0dd717479699708a4953bcec8a.mailgun.org"
-        apiKey = "<apikey>"
+        let testBundle = Bundle(for: AppTests.self)
+        apiKey = testBundle.infoDictionary?["MG_API_AUTHORIZE_KEY"] as? String ?? "<apikey>"
     }
     
     override func tearDown() {
