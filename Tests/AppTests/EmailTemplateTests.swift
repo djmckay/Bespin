@@ -20,7 +20,7 @@ final class EmailTemplateTests: XCTestCase {
     
     let expectedName = "Template1"
     let expectedText = "Hello this is text"
-    let expectedHtml = "<b>Hello this is html</b>"
+    let expectedHtml = "<b>Hello this is html</b><div class=\"something\"><p>test</p></div>"
     var user: User!
     
     override func setUp() {

@@ -37,6 +37,7 @@ struct TokensController: BespinController {
         let guardAuthMiddleware = User.guardAuthMiddleware()
         let basicAuthGroup = route.grouped(basicAuthMiddleware, guardAuthMiddleware)
         basicAuthGroup.get(use: getAllHandler)
+        basicAuthGroup.delete(Token.parameter, use: deleteHandler)
     }
     
     func createHandler(_ req: Request, entity: Token) throws -> Future<Public> {
@@ -66,7 +67,12 @@ struct TokensController: BespinController {
     }
     
     func deleteHandler(_ req: Request) throws -> EventLoopFuture<HTTPStatus> {
-        return try req.parameters.next(T.self).delete(on: req).transform(to: HTTPStatus.noContent)
+        let id = try req.parameters.next(User.self)
+        return id.flatMap({ (user) -> EventLoopFuture<HTTPStatus> in
+            return try req.parameters.next(T.self).delete(on: req).transform(to: HTTPStatus.noContent)
+        })
+        
+        
     }
     
 }

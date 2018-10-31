@@ -36,6 +36,7 @@ struct UsersController: BespinController {
         usersRoute.post(User.self, use: createHandler)
         let protectedRoutes = usersRoute.grouped(AdminJWTMiddleWareProvider())
         protectedRoutes.get(use: getAllHandler)
+        protectedRoutes.delete(User.parameter, use: deleteHandler)
     }
     
     func createHandler(_ req: Request, entity: User) throws -> Future<Public> {

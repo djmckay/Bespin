@@ -8,7 +8,31 @@
 import Foundation
 import Vapor
 
-public struct MailgunEmail: Content {
+public protocol MailgunEmailType: Content {
+    var to: String? { get set }
+    
+    var from: String? { get set }
+    
+    var cc: String? { get set }
+    
+    var bcc: String? { get set }
+    
+    var replyTo: String? { get set }
+    
+    /// The global, or “message level”, subject of your email. This may be overridden by personalizations[x].subject.
+    var subject: String? { get set }
+    
+    /// An array in which you may specify the content of your email.
+    var text: String? { get set }
+    var html: String? { get set }
+    
+    /// An array of objects in which you can specify any attachments you want to include.
+    var attachments: [EmailAttachment]? { get set }
+    var recipientVariables: String? { get set }
+    var deliveryTime: String? { get set }
+}
+
+public struct MailgunEmail: MailgunEmailType {
     
     public static var defaultContentType: MediaType = MediaType.formData
     
@@ -36,6 +60,7 @@ public struct MailgunEmail: Content {
     public typealias RecipientVariables = [String: [String: String]]
     
     public var recipientVariables: String?
+    public var deliveryTime: String?
     
     public init(from: String? = nil, replyTo: EmailAddress? = nil,
                 cc: [EmailAddress]? = nil,
@@ -45,7 +70,7 @@ public struct MailgunEmail: Content {
                 html: String? = nil,
                 subject: String? = nil,
                 attachments: [EmailAttachment]? = nil,
-                recipientVariables: RecipientVariables? = nil, mustacheData: Message.MustacheHash? = nil) {
+                recipientVariables: RecipientVariables? = nil, deliveryTime: Date? = nil) {
         self.from = from
         self.replyTo = replyTo?.email
         self.to = to?.stringArray.joined(separator: ",")
@@ -55,6 +80,13 @@ public struct MailgunEmail: Content {
         self.html = html
         self.subject = subject
         self.attachments = attachments
+        
+        if let deliveryTime = deliveryTime {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "E, d MMM yyyy HH:mm:ss Z"
+            self.deliveryTime = formatter.string(from: deliveryTime)
+        }
+        
         if let data = try? JSONEncoder().encode(recipientVariables) {
             self.recipientVariables = String(data: data, encoding: .utf8)!
 //            do {
@@ -93,6 +125,7 @@ public struct MailgunEmail: Content {
         case subject
         case attachments
         case recipientVariables = "recipient-variables"
+        case deliveryTime = "o:deliverytime"
     }
 }
 
@@ -112,4 +145,82 @@ class MyDateFormatter: DateFormatter {
         return ""
     }
     
+}
+
+public struct MailgunEmailPlus<Element: Codable>: MailgunEmailType {
+    public var to: String?
+    
+    public var from: String?
+    
+    public var cc: String?
+    
+    public var bcc: String?
+    
+    public var replyTo: String?
+    
+    /// The global, or “message level”, subject of your email. This may be overridden by personalizations[x].subject.
+    public var subject: String?
+    
+    /// An array in which you may specify the content of your email.
+    public var text: String?
+    public var html: String?
+    
+    /// An array of objects in which you can specify any attachments you want to include.
+    public var attachments: [EmailAttachment]?
+    //var data: Element
+    public var recipientVariables: String?
+    public var deliveryTime: String?
+    
+    public static var defaultContentType: MediaType {
+        get {
+            return MediaType.formData
+        }
+    }
+    
+    public init(from: String? = nil, replyTo: EmailAddress? = nil,
+                cc: [EmailAddress]? = nil,
+                bcc: [EmailAddress]? = nil,
+                to: [EmailAddress]? = nil,
+                text: String? = nil,
+                html: String? = nil,
+                subject: String? = nil,
+                attachments: [EmailAttachment]? = nil,
+                deliveryTime: Date? = nil, data: Element) {
+        self.from = from
+        self.replyTo = replyTo?.email
+        self.to = to?.stringArray.joined(separator: ",")
+        self.cc = cc?.stringArray.joined(separator: ",")
+        self.bcc = bcc?.stringArray.joined(separator: ",")
+        self.text = text
+        self.html = html
+        self.subject = subject
+        self.attachments = attachments
+        
+        if let deliveryTime = deliveryTime {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "E, d MMM yyyy HH:mm:ss Z"
+            self.deliveryTime = formatter.string(from: deliveryTime)
+        }
+        let personalizations = [to!.first!.rawEmail : data]
+        if let data = try? JSONEncoder().encode(personalizations) {
+            //self.recipientVariables = String(data: data, encoding: .utf8)!
+            
+        }
+
+        
+    }
+    
+    public enum CodingKeys: String, CodingKey {
+        case from
+        case replyTo = "h:Reply-To"
+        case to
+        case cc
+        case bcc
+        case text
+        case html
+        case subject
+        case attachments
+        case recipientVariables = "recipient-variables"
+        case deliveryTime = "o:deliverytime"
+    }
 }

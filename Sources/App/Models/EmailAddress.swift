@@ -11,9 +11,11 @@ import Vapor
 public struct EmailAddress: Content {
     /// format: "Bob <bob@host.com>"
     public var email: String?
+    public var rawEmail: String?
     
     public init(email: String,
                 name: String? = nil) {
+        self.rawEmail = email
         self.email = "\(name ?? "") <\(email)>"
     }
 }

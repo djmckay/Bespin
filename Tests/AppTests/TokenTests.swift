@@ -93,6 +93,29 @@ class TokenTests: XCTestCase {
         XCTAssertEqual(otherTokens[0].id, token3.id)
         XCTAssertEqual(otherTokens[0].userID, token3.userID)
     }
+    
+    func testTokenCanBeDeletedFromAPI() throws {
+        // This is an example of a functional test case.
+        // Use XCTAssert and related functions to verify your tests produce the correct results.
+        
+        let password = try BCrypt.hash("myPassword")
+        let user = try User(name: "testapi", username: "testapi", password: password, domain: "domain.example.com").save(on: conn).wait()
+        let creds = BasicAuthorization(username: user.username, password: "myPassword")
+        headers.basicAuthorization = creds
+        let token = try Token(token: "token1", userID: user.id!).save(on: conn).wait()
+        uri = "/api/users/\(user.id!.uuidString)/tokens/"
+        
+        var tokens = try app.getResponse(to: uri, headers: headers, decodeTo: [Token].self)
+        
+        XCTAssertEqual(tokens.count, 1)
+        XCTAssertEqual(tokens[0].token, token.token)
+        XCTAssertEqual(tokens[0].id, token.id)
+        XCTAssertEqual(tokens[0].userID, token.userID)
+        
+        _ = try app.sendRequest(to: "\(uri)\(token.id!)", method: HTTPMethod.DELETE, headers: headers)
+        tokens = try app.getResponse(to: uri,headers: headers, decodeTo: [Token].self)
+        XCTAssertEqual(tokens.count, 0)
+    }
 
     func testPerformanceExample() {
         // This is an example of a performance test case.

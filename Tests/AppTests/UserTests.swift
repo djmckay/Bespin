@@ -173,6 +173,73 @@ final class UserTests: XCTestCase {
         
     }
     
+    func testAdminCanGetDeleteUserWithAPI() throws {
+        let password = try BCrypt.hash("myPassword")
+        let user = try User(name: "testapi", username: "testapi", password: password, domain: "domain.example.com").save(on: conn).wait()
+        let user2 = try User(name: "testapi2", username: "testapi2", password: password, domain: "domain.example.com").save(on: conn).wait()
+        
+        // create payload
+        let adminToken = AdminToken(key: "1234567890987654321")
+        
+        // create JWT and sign
+        let jwt = try! JWT(payload: adminToken).sign(using: .hs256(key: "secret"))
+        headers = HTTPHeaders()
+        headers.add(name: .authorization, value: "Bearer \(String(data: jwt, encoding: .utf8) ?? "")")
+        headers.add(name: "Content-Type", value: "application/json")
+        
+        var users = try app.getResponse(to: uri, headers: headers, decodeTo: [User.Public].self)
+        
+        XCTAssertEqual(users.count, 2)
+        
+        _ = try app.sendRequest(to: "\(uri)\(user.id!)", method: HTTPMethod.DELETE, headers: headers)
+        users = try app.getResponse(to: uri,headers: headers, decodeTo: [User.Public].self)
+        
+        XCTAssertEqual(users.count, 1)
+        
+        XCTAssertEqual(users[0].name, user2.name)
+        XCTAssertEqual(users[0].username, user2.username)
+        XCTAssertEqual(users[0].domain, user2.domain)
+        XCTAssertNotNil(users[0].id)
+        
+    }
+    
+    func testUserCanGetDeleteUserWithAPI() throws {
+        let password = try BCrypt.hash("myPassword")
+        let user = try User(name: "testapi", username: "testapi", password: password, domain: "domain.example.com").save(on: conn).wait()
+        let user2 = try User(name: "testapi2", username: "testapi2", password: password, domain: "domain.example.com").save(on: conn).wait()
+        
+        headers.add(name: "Content-Type", value: "application/json")
+        
+        let response = try app.sendRequest(to: "\(uri)\(user.id!)", method: HTTPMethod.DELETE, headers: headers)
+        if response.http.status != .unauthorized {
+            XCTFail()
+        }
+//        users = try app.getResponse(to: uri,headers: headers, decodeTo: [User.Public].self)
+//
+//        XCTAssertEqual(users.count, 1)
+//
+//        XCTAssertEqual(users[0].name, user2.name)
+//        XCTAssertEqual(users[0].username, user2.username)
+//        XCTAssertEqual(users[0].domain, user2.domain)
+//        XCTAssertNotNil(users[0].id)
+        
+    }
+    
+    func testUserCanGetAllUsersWithAPIFails() throws {
+        let password = try BCrypt.hash("myPassword")
+        let user = try User(name: "testapi", username: "testapi", password: password, domain: "domain.example.com").save(on: conn).wait()
+        let creds = BasicAuthorization(username: user.username, password: "myPassword")
+        headers.basicAuthorization = creds
+        headers.add(name: "Content-Type", value: "application/json")
+        
+        let users = try app.sendRequest(to: uri, method: .GET, headers: headers)
+        
+        if users.http.status != .unauthorized {
+            XCTFail()
+        }
+
+    }
+    
 //    func testUserCanGenerateAPIKey() throws {
 //        let user = User(name: "testapi", username: "testapi", password: "myPassword", domain: "domain.example.com")
 //        

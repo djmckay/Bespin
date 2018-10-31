@@ -1,0 +1,18 @@
+#(event.name) Registration
+
+#date(event.Date, "dd-MMM-yyyy")
+#(event.location)
+#(event.longName)
+
+#(confirmation)
+#(attendee.firstName) #(attendee.lastName)
+#(attendee.company)
+#(attendee.addressLine1)
+#if(attendee.addressLine2) {
+#(attendee.addressLine2)
+}
+#(attendee.addressCity),  #(attendee.addressState)  #(attendee.addressZip)
+#(attendee.addressCountry)
+#(attendee.email)
+
+#(attendee.phone)

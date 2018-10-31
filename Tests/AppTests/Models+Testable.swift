@@ -11,8 +11,9 @@ import Vapor
 import Crypto
 
 extension EmailTemplate {
-    static func create(name: String = "otherTemplate", text: String = "Other text", html: String = "Other html", user: User, on connection: MySQLConnection) throws -> EmailTemplate {
+    static func create(name: String = "otherTemplate", text: String = "Other text", html: String = "Other html", subject: String? = nil, user: User, on connection: MySQLConnection) throws -> EmailTemplate {
         let template = EmailTemplate(name: name, text: text, html: html, userID: user.id!)
+        template.subject = subject
         return try template.save(on: connection).wait()
     }
 }

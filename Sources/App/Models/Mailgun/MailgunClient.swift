@@ -25,7 +25,7 @@ public final class MailgunClient: Service {
         self.logger = logger
     }
     
-    public func send(apiKey: String, domain: String, _ email: MailgunEmail, on worker: Worker) throws -> Future<Response> {
+    public func send<E>(apiKey: String, domain: String, _ email: E, on worker: Worker) throws -> Future<Response> where E: MailgunEmailType {
         let authKeyEncoded = try encode(apiKey: apiKey)
             var headers: HTTPHeaders = [:]
             headers.add(name: HTTPHeaderName.authorization, value: "Basic \(authKeyEncoded)")

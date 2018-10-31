@@ -13,12 +13,14 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
 //    services.register(mailConfig)
     try services.register(MailgunProvider())
     try services.register(LeafProvider())
+    config.prefer(LeafRenderer.self, for: ViewRenderer.self)
     services.register(BespinErrorMiddleware.self)
     services.register(LoggerMiddleware.self)
     services.register { container -> LeafTagConfig in
         var config = LeafTagConfig.default()
         config.use(DateFormat(), as: "formatDate")
         config.use(ConfigValueTag(), as: "configValueFor")
+        config.use(HtmlizeTag(), as: "htmlize")
         return config
     }
     /// Register routes to the router
