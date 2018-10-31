@@ -59,7 +59,7 @@ public final class MailgunClient: Service {
                 try req.content.encode(email)
             }
             return request.map { response in
-                try self.process(response)
+                _ = try self.process(response)
             }
             }.flatten(on: worker)
     }

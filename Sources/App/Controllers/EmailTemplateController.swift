@@ -102,7 +102,7 @@ extension JWT {
         
         let headerData = Data(parts[0])
         let payloadData = Data(parts[1])
-        let signatureData = Data(parts[2])
+        _ = Data(parts[2])
         
         
         let jsonDecoder = JSONDecoder()

@@ -17,7 +17,7 @@ extension TemplateRenderer {
 
 extension TemplateRenderer {
     func testRender(_ template: String, _ context: TemplateData = .null) throws -> Future<View> {
-        let view = try self.render(template: template.data(using: .utf8)!, context)
+        let view = self.render(template: template.data(using: .utf8)!, context)
         return view
     }
 }

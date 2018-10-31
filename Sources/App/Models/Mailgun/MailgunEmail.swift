@@ -201,11 +201,11 @@ public struct MailgunEmailPlus<Element: Codable>: MailgunEmailType {
             formatter.dateFormat = "E, d MMM yyyy HH:mm:ss Z"
             self.deliveryTime = formatter.string(from: deliveryTime)
         }
-        let personalizations = [to!.first!.rawEmail : data]
-        if let data = try? JSONEncoder().encode(personalizations) {
-            //self.recipientVariables = String(data: data, encoding: .utf8)!
-            
-        }
+//        let personalizations = [to!.first!.rawEmail : data]
+//        if let data = try? JSONEncoder().encode(personalizations) {
+//            //self.recipientVariables = String(data: data, encoding: .utf8)!
+//            
+//        }
 
         
     }
