@@ -53,7 +53,7 @@ struct UsersController: BespinController {
     }
     
     func generateApiKey(_ req: Request, token: Token) throws -> Future<Token> {
-        let user = try req.requireAuthenticated(User.self)
+        _ = try req.requireAuthenticated(User.self)
         //let token = try Token.generate(for: user)
         return token.save(on: req)
     }
