@@ -19,7 +19,6 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     services.register { container -> LeafTagConfig in
         var config = LeafTagConfig.default()
         config.use(DateFormat(), as: "formatDate")
-        config.use(ConfigValueTag(), as: "configValueFor")
         config.use(HtmlizeTag(), as: "htmlize")
         return config
     }
@@ -40,7 +39,7 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     // Configure a MySQL database
 
     var databases = DatabasesConfig()
-    if env == .testing {
+    if env == .testing || env == .development {
         databases.add(database: Bespin.BespinTest, as: .Bespin)
     } else {
         databases.add(database: Bespin.Bespin, as: .Bespin)
@@ -53,7 +52,7 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     migrations.add(model: User.self, database: .Bespin)
     migrations.add(model: EmailTemplate.self, database: .Bespin)
     migrations.add(model: Token.self, database: .Bespin)
-    if env != .testing {
+    if env != .testing && env != .development {
         migrations.add(migration: EmailTemplateAddUserRelationship.self, database: .Bespin)
         migrations.add(migration: TokenAddUserRelationship.self, database: .Bespin)
     }

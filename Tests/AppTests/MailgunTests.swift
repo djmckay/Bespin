@@ -37,6 +37,7 @@ final class MailgunTests: XCTestCase {
     }
     
     func testMailgunCanSendMessageAsArray() throws {
+        let attachment = EmailAttachment(content: "content", type: "image/png", filename: "testImage", disposition: nil, contentId: nil)
         let message = MailgunEmail(
             from: "mailgun@sandbox1ae25b0dd717479699708a4953bcec8a.mailgun.org",
             to: [EmailAddress(email: "testing@ibtuf.com")],

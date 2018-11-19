@@ -91,36 +91,36 @@ struct EmailTemplateController: BespinController {
 
 }
 
-extension JWT {
-    
-    /// Parses a JWT string into a JSON Web Signature
-    public init(from data: LosslessDataConvertible) throws {
-        let parts = data.convertToData().split(separator: .period)
-        guard parts.count == 3 else {
-            throw JWTError(identifier: "invalidJWT", reason: "Malformed JWT")
-        }
-        
-        let headerData = Data(parts[0])
-        let payloadData = Data(parts[1])
-        _ = Data(parts[2])
-        
-        
-        let jsonDecoder = JSONDecoder()
-        jsonDecoder.dateDecodingStrategy = .secondsSince1970
-        
-        guard let decodedHeader = Data(base64URLEncoded: headerData) else {
-            throw JWTError(identifier: "base64", reason: "JWT header is not valid base64-url")
-        }
-        guard let decodedPayload = Data(base64URLEncoded: payloadData) else {
-            throw JWTError(identifier: "base64", reason: "JWT payload is not valid base64-url")
-        }
-        
-        self.header = try jsonDecoder.decode(JWTHeader.self, from: decodedHeader)
-        self.payload = try jsonDecoder.decode(Payload.self, from: decodedPayload)
-    }
-    
-    func verify(verifiedUsing signer: JWTSigner) {
-        
-    }
-    
-}
+//extension JWT {
+//    
+//    /// Parses a JWT string into a JSON Web Signature
+//    public init(from data: LosslessDataConvertible) throws {
+//        let parts = data.convertToData().split(separator: .period)
+//        guard parts.count == 3 else {
+//            throw JWTError(identifier: "invalidJWT", reason: "Malformed JWT")
+//        }
+//        
+//        let headerData = Data(parts[0])
+//        let payloadData = Data(parts[1])
+//        _ = Data(parts[2])
+//        
+//        
+//        let jsonDecoder = JSONDecoder()
+//        jsonDecoder.dateDecodingStrategy = .secondsSince1970
+//        
+//        guard let decodedHeader = Data(base64URLEncoded: headerData) else {
+//            throw JWTError(identifier: "base64", reason: "JWT header is not valid base64-url")
+//        }
+//        guard let decodedPayload = Data(base64URLEncoded: payloadData) else {
+//            throw JWTError(identifier: "base64", reason: "JWT payload is not valid base64-url")
+//        }
+//        
+//        self.header = try jsonDecoder.decode(JWTHeader.self, from: decodedHeader)
+//        self.payload = try jsonDecoder.decode(Payload.self, from: decodedPayload)
+//    }
+//    
+//    func verify(verifiedUsing signer: JWTSigner) {
+//        
+//    }
+//    
+//}
