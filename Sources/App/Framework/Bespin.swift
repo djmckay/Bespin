@@ -91,7 +91,7 @@ public final class BespinErrorMiddleware: Middleware, ServiceType {
             }
             
             // create a Response with appropriate status
-            let res = req.response(http: .init(status: status, headers: headers))
+            let res = Response(http: .init(status: status, headers: headers), using: req)
             
             // attempt to serialize the error to json
             do {

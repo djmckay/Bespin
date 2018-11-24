@@ -224,3 +224,4 @@ public struct MailgunEmailPlus<Element: Codable>: MailgunEmailType {
         case deliveryTime = "o:deliverytime"
     }
 }
+

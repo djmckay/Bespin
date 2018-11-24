@@ -154,13 +154,13 @@ struct MessagesController: RouteCollection {
                     let id = UUID(uuidString: template)!
                     return EmailTemplate.find(id, on: req).flatMap({ (template) -> EventLoopFuture<Response> in
                         let mailgun = try req.make(MailgunClient.self)
-                        let mailgunEmail = MailgunEmail(from: entity.from?.email, replyTo: entity.replyTo, cc: entity.cc, bcc: entity.bcc, to: entity.to, text: template!.text, html: template!.html, subject: entity.subject ?? template!.subject, attachments: entity.attachments, recipientVariables: entity.recipientVariables)
+                        let mailgunEmail = MailgunEmail(from: entity.from?.email, replyTo: entity.replyTo, cc: entity.cc, bcc: entity.bcc, to: entity.to, text: template!.text, html: template!.html, subject: entity.subject ?? template!.subject, attachments: entity.attachments, recipientVariables: entity.recipientVariables, deliveryTime: entity.deliveryTime)
                         
                         return try mailgun.send(apiKey: token.token, domain: user.domain, mailgunEmail, on: req)
                     })
                 } else {
                     let mailgun = try req.make(MailgunClient.self)
-                    let mailgunEmail = MailgunEmail(from: entity.from?.email, replyTo: entity.replyTo, cc: entity.cc, bcc: entity.bcc, to: entity.to, text: entity.text, html: entity.html, subject: entity.subject, attachments: entity.attachments, recipientVariables: entity.recipientVariables)
+                    let mailgunEmail = MailgunEmail(from: entity.from?.email, replyTo: entity.replyTo, cc: entity.cc, bcc: entity.bcc, to: entity.to, text: entity.text, html: entity.html, subject: entity.subject, attachments: entity.attachments, recipientVariables: entity.recipientVariables, deliveryTime: entity.deliveryTime)
                     
                     return try mailgun.send(apiKey: token.token, domain: user.domain, mailgunEmail, on: req)
                 }
