@@ -21,12 +21,20 @@ final class EmailTemplate: BespinModel {
     var html: String
     var subject: String?
     var userID: User.ID
+    var from: String?
+    var cc: String?
+    var bcc: String?
+    var replyTo: String?
     
-    init(name: String, text: String, html: String, userID: User.ID) {
+    init(name: String, text: String, html: String, userID: User.ID, from: String? = nil, cc: String? = nil, bcc: String? = nil, replyTo: String? = nil) {
         self.name = name
         self.text = text
         self.html = html
         self.userID = userID
+        self.from = from
+        self.cc = cc
+        self.bcc = bcc
+        self.replyTo = replyTo
     }
     
     func convertToPublic() -> EmailTemplate {
@@ -46,6 +54,10 @@ extension EmailTemplate: Migration {
             builder.field(for: \.subject)
             builder.field(for: \.userID)
             builder.reference(from: \.userID, to: \User.id)
+            builder.field(for: \.from)
+            builder.field(for: \.cc)
+            builder.field(for: \.bcc)
+            builder.field(for: \.replyTo)
         })
     }
     

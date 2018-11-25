@@ -63,6 +63,10 @@ struct EmailTemplateController: BespinController {
                             item.text = updatedItem.text
                             item.html = updatedItem.html
                             item.subject = updatedItem.subject
+                            item.from = updatedItem.from
+                            item.cc = updatedItem.cc
+                            item.bcc = updatedItem.bcc
+                            item.replyTo = updatedItem.replyTo
                             return item.save(on: req)
         }
     }

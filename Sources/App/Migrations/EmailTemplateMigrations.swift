@@ -69,4 +69,28 @@ struct EmailTemplateAddUserRelationship: Migration {
     
 }
 
+struct EmailTemplateAddEmailFields: Migration {
+    static func prepare(on conn: MySQLConnection) -> EventLoopFuture<Void> {
+        return MySQLDatabase.update(EmailTemplate.self, on: conn, closure: { (builder) in
+            builder.field(for: \.from)
+            builder.field(for: \.cc)
+            builder.field(for: \.bcc)
+            builder.field(for: \.replyTo)
+        })
+    }
+    
+    static func revert(on conn: MySQLConnection) -> EventLoopFuture<Void> {
+        return MySQLDatabase.update(EmailTemplate.self, on: conn, closure: { (builder) in
+            builder.deleteField(for: \.from)
+            builder.deleteField(for: \.cc)
+            builder.deleteField(for: \.bcc)
+            builder.deleteField(for: \.replyTo)
+        })
+    }
+    
+    typealias Database = MySQLDatabase
+    
+    
+}
+
 

@@ -59,7 +59,10 @@ struct UsersController: BespinController {
     }
     
     func loginHandler(_ req: Request) throws -> Public {
+        let log: Logger = try req.make(Logger.self)
+        log.verbose("login handler")
         let user = try req.requireAuthenticated(User.self)
+        log.verbose(user.username)
         return user.convertToPublic()
     }
     

@@ -258,7 +258,7 @@ final class MessagesTests: XCTestCase {
         let workDir = try app.make(DirectoryConfig.self).workDir
         let absolutePath = leafPath.hasPrefix("/") ? leafPath : workDir + "Resources/Views/" + leafPath
         let leafData = FileManager.default.contents(atPath: absolutePath)!
-        let leafHtml = String(data: leafData, encoding: .utf8)?.replacingOccurrences(of: "2019", with: "2020")
+        let leafHtml = String(data: leafData, encoding: .utf8)
         let template = try EmailTemplate.create(name: "InviteTest", text: "", html: leafHtml!, subject: "#(vendor.name)", user: user, on: conn)
         let leaf = template.id!.uuidString
         let event = Event(name: "name", year: "2020", date: Date(), longName: "longName", sponsorCompanyName: "Sponsor", title: "A title", location: "The location", registrationUpdateLink: "reglink", logoBase64: nil)
