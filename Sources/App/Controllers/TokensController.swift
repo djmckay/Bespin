@@ -41,12 +41,16 @@ struct TokensController: BespinController {
     }
     
     func createHandler(_ req: Request, entity: Token) throws -> Future<Public> {
+        let loggedInUser = try req.requireAuthenticated(User.self)
+        entity.userID = loggedInUser.id!
         return entity.save(on: req)
     }
     
     func getAllHandler(_ req: Request) throws -> Future<[Public]> {
         let id = try req.parameters.next(User.self)
         return id.flatMap({ (user) -> EventLoopFuture<[Public]> in
+            let loggedInUser = try req.requireAuthenticated(User.self)
+            guard loggedInUser.id == user.id else { throw  Abort(.forbidden, reason: "No user") }
             return try user.tokens.query(on: req).decode(Public.self).all()
             //return T.query(on: req).decode(data: Public.self).all()
         })
@@ -61,7 +65,8 @@ struct TokensController: BespinController {
         return try flatMap(to: T.Public.self,
                            req.parameters.next(T.self),
                            req.content.decode(T.self)) { item, updatedItem in
-                            
+                            let loggedInUser = try req.requireAuthenticated(User.self)
+                            guard loggedInUser.id == item.userID else { throw  Abort(.forbidden, reason: "No user") }
                             return item.save(on: req)
         }
     }
@@ -69,6 +74,8 @@ struct TokensController: BespinController {
     func deleteHandler(_ req: Request) throws -> EventLoopFuture<HTTPStatus> {
         let id = try req.parameters.next(User.self)
         return id.flatMap({ (user) -> EventLoopFuture<HTTPStatus> in
+            let loggedInUser = try req.requireAuthenticated(User.self)
+            guard loggedInUser.id == user.id else { throw  Abort(.forbidden, reason: "No user") }
             return try req.parameters.next(T.self).delete(on: req).transform(to: HTTPStatus.noContent)
         })
         

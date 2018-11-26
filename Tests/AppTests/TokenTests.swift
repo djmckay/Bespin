@@ -85,13 +85,9 @@ class TokenTests: XCTestCase {
         XCTAssertEqual(tokens[1].userID, token2.userID)
         
         uri = "/api/users/\(user2.id!.uuidString)/tokens/"
+        let response = try app.sendRequest(to: uri, method: .GET, headers: headers)
+        XCTAssertEqual(response.http.status, .forbidden)
         
-        let otherTokens = try app.getResponse(to: uri, headers: headers, decodeTo: [Token].self)
-        
-        XCTAssertEqual(otherTokens.count, 1)
-        XCTAssertEqual(otherTokens[0].token, token3.token)
-        XCTAssertEqual(otherTokens[0].id, token3.id)
-        XCTAssertEqual(otherTokens[0].userID, token3.userID)
     }
     
     func testTokenCanBeDeletedFromAPI() throws {

@@ -49,11 +49,16 @@ struct UsersController: BespinController {
     }
     
     func getHandler(_ req: Request) throws -> Future<Public> {
+        let id = req.parameters.rawValues(for: User.self).first!
+        let user = try req.requireAuthenticated(User.self)
+        guard id == user.id?.uuidString else { throw  Abort(.forbidden, reason: "Invalid user") }
         return try req.parameters.next(User.self).convertToPublic()
     }
     
     func generateApiKey(_ req: Request, token: Token) throws -> Future<Token> {
-        _ = try req.requireAuthenticated(User.self)
+        let user = try req.requireAuthenticated(User.self)
+        guard let id = user.id else { throw  Abort(.forbidden, reason: "Invalid user") }
+        token.userID = id
         //let token = try Token.generate(for: user)
         return token.save(on: req)
     }
@@ -70,7 +75,9 @@ struct UsersController: BespinController {
         return try flatMap(to: T.Public.self,
                            req.parameters.next(T.self),
                            req.content.decode(T.self)) { item, updatedItem in
-                            item.password = try BCrypt.hash(item.password)
+                            item.password = try BCrypt.hash(updatedItem.password)
+                            item.domain = updatedItem.domain
+                            item.username = updatedItem.username
                             //                            item.short = updatedItem.short
                             //                            item.long = updatedItem.long
                             return item.save(on: req).convertToPublic()
