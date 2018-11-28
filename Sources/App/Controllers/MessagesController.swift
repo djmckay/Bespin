@@ -159,15 +159,17 @@ struct MessagesController: RouteCollection {
                         if let templateReplyToString = template.replyTo {
                             templateReplyTo = EmailAddress(email: templateReplyToString)
                         }
-                        var templateCc: [EmailAddress] = []
+                        var templateCc: [EmailAddress]
                         if let templateCcString = template.cc {
+                            templateCc = []
                             let inputs = templateCcString.split(separator: ",")
                             for input in inputs {
                                 templateCc.append(EmailAddress(email: String(input)))
                             }
                         }
-                        var templateBcc: [EmailAddress] = []
+                        var templateBcc: [EmailAddress]
                         if let templateBccString = template.bcc {
+                            templateBcc = []
                             let inputs = templateBccString.split(separator: ",")
                             for input in inputs {
                                 templateBcc.append(EmailAddress(email: String(input)))
