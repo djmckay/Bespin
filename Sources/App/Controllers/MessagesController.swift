@@ -159,20 +159,20 @@ struct MessagesController: RouteCollection {
                         if let templateReplyToString = template.replyTo {
                             templateReplyTo = EmailAddress(email: templateReplyToString)
                         }
-                        var templateCc: [EmailAddress]
+                        var templateCc: [EmailAddress]?
                         if let templateCcString = template.cc {
                             templateCc = []
                             let inputs = templateCcString.split(separator: ",")
                             for input in inputs {
-                                templateCc.append(EmailAddress(email: String(input)))
+                                templateCc?.append(EmailAddress(email: String(input)))
                             }
                         }
-                        var templateBcc: [EmailAddress]
+                        var templateBcc: [EmailAddress]?
                         if let templateBccString = template.bcc {
                             templateBcc = []
                             let inputs = templateBccString.split(separator: ",")
                             for input in inputs {
-                                templateBcc.append(EmailAddress(email: String(input)))
+                                templateBcc?.append(EmailAddress(email: String(input)))
                             }
                         }
                         let mailgunEmail = MailgunEmail(from: entity.from?.email ?? template.from, replyTo: entity.replyTo ?? templateReplyTo, cc: entity.cc ?? templateCc, bcc: entity.bcc ?? templateBcc, to: entity.to, text: template.text, html: template.html, subject: entity.subject ?? template.subject, attachments: entity.attachments, recipientVariables: entity.recipientVariables, deliveryTime: entity.deliveryTime)
