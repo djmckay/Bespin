@@ -154,7 +154,12 @@ struct MessagesController: RouteCollection {
                     let id = UUID(uuidString: template)!
                     return EmailTemplate.find(id, on: req).flatMap({ (template) -> EventLoopFuture<Response> in
                         let mailgun = try req.make(MailgunClient.self)
-                        let mailgunEmail = MailgunEmail(from: entity.from?.email, replyTo: entity.replyTo, cc: entity.cc, bcc: entity.bcc, to: entity.to, text: template!.text, html: template!.html, subject: entity.subject ?? template!.subject, attachments: entity.attachments, recipientVariables: entity.recipientVariables, deliveryTime: entity.deliveryTime)
+                        guard let template = template else { throw Abort(.forbidden, reason: "Invalid Template") }
+                        var templateReplyTo: EmailAddress?
+                        if let templateReplyToString = template.replyTo {
+                            templateReplyTo = EmailAddress(email: templateReplyToString)
+                        }
+                        let mailgunEmail = MailgunEmail(from: entity.from?.email ?? template.from, replyTo: entity.replyTo ?? templateReplyTo, cc: entity.cc, bcc: entity.bcc, to: entity.to, text: template.text, html: template.html, subject: entity.subject ?? template.subject, attachments: entity.attachments, recipientVariables: entity.recipientVariables, deliveryTime: entity.deliveryTime)
                         
                         return try mailgun.send(apiKey: token.token, domain: user.domain, mailgunEmail, on: req)
                     })
