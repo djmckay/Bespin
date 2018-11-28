@@ -159,7 +159,21 @@ struct MessagesController: RouteCollection {
                         if let templateReplyToString = template.replyTo {
                             templateReplyTo = EmailAddress(email: templateReplyToString)
                         }
-                        let mailgunEmail = MailgunEmail(from: entity.from?.email ?? template.from, replyTo: entity.replyTo ?? templateReplyTo, cc: entity.cc, bcc: entity.bcc, to: entity.to, text: template.text, html: template.html, subject: entity.subject ?? template.subject, attachments: entity.attachments, recipientVariables: entity.recipientVariables, deliveryTime: entity.deliveryTime)
+                        var templateCc: [EmailAddress] = []
+                        if let templateCcString = template.cc {
+                            let inputs = templateCcString.split(separator: ",")
+                            for input in inputs {
+                                templateCc.append(EmailAddress(email: String(input)))
+                            }
+                        }
+                        var templateBcc: [EmailAddress] = []
+                        if let templateBccString = template.bcc {
+                            let inputs = templateBccString.split(separator: ",")
+                            for input in inputs {
+                                templateBcc.append(EmailAddress(email: String(input)))
+                            }
+                        }
+                        let mailgunEmail = MailgunEmail(from: entity.from?.email ?? template.from, replyTo: entity.replyTo ?? templateReplyTo, cc: entity.cc ?? templateCc, bcc: entity.bcc ?? templateBcc, to: entity.to, text: template.text, html: template.html, subject: entity.subject ?? template.subject, attachments: entity.attachments, recipientVariables: entity.recipientVariables, deliveryTime: entity.deliveryTime)
                         
                         return try mailgun.send(apiKey: token.token, domain: user.domain, mailgunEmail, on: req)
                     })
