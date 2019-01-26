@@ -272,7 +272,7 @@ public struct Message: Content {
         case text
         case html
         case subject
-        case attachments
+        case attachments = "attachment"
         case recipientVariables = "recipient-variables"
         case template
         case deliveryTime
