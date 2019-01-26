@@ -56,7 +56,7 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
         migrations.add(migration: EmailTemplateAddUserRelationship.self, database: .Bespin)
         migrations.add(migration: TokenAddUserRelationship.self, database: .Bespin)
     }
-    services.register(migrations)
+    //services.register(migrations)
 
     var commandConfig = CommandConfig.default()
     commandConfig.useFluentCommands()
