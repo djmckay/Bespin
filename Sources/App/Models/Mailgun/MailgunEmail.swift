@@ -84,7 +84,7 @@ public struct MailgunEmail: MailgunEmailType {
         //self.testmode = testmode
         if let deliveryTime = deliveryTime {
             let formatter = DateFormatter()
-            formatter.dateFormat = "E, d MMM yyyy HH:mm:ss Z"
+            formatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss Z"
             self.deliveryTime = formatter.string(from: deliveryTime)
         }
         
@@ -201,7 +201,7 @@ public struct MailgunEmailPlus<Element: Codable>: MailgunEmailType {
         //self.testmode = testmode
         if let deliveryTime = deliveryTime {
             let formatter = DateFormatter()
-            formatter.dateFormat = "E, d MMM yyyy HH:mm:ss Z"
+            formatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss Z"
             self.deliveryTime = formatter.string(from: deliveryTime)
         }
 //        let personalizations = [to!.first!.rawEmail : data]
