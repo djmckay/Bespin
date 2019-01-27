@@ -71,7 +71,7 @@ public struct MailgunEmail: MailgunEmailType {
                 html: String? = nil,
                 subject: String? = nil,
                 attachments: [EmailAttachment]? = nil,
-                recipientVariables: RecipientVariables? = nil, deliveryTime: String? = nil, testmode: Bool? = false) {
+                recipientVariables: RecipientVariables? = nil, deliveryTime: Date? = nil, testmode: Bool? = false) {
         self.from = from
         self.replyTo = replyTo?.email
         self.to = to?.stringArray.joined(separator: ",")
@@ -82,12 +82,12 @@ public struct MailgunEmail: MailgunEmailType {
         self.subject = subject
         self.attachments = attachments
         //self.testmode = testmode
-//        if let deliveryTime = deliveryTime {
-//            let formatter = DateFormatter()
-//            formatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss Z"
-//            self.deliveryTime = formatter.string(from: deliveryTime)
-//        }
-        self.deliveryTime = deliveryTime
+        if let deliveryTime = deliveryTime {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss Z"
+            self.deliveryTime = formatter.string(from: deliveryTime)
+        }
+        
         if let data = try? JSONEncoder().encode(recipientVariables) {
             self.recipientVariables = String(data: data, encoding: .utf8)!
 //            do {
@@ -188,7 +188,7 @@ public struct MailgunEmailPlus<Element: Codable>: MailgunEmailType {
                 html: String? = nil,
                 subject: String? = nil,
                 attachments: [EmailAttachment]? = nil,
-                deliveryTime: String? = nil, data: Element, testmode: Bool? = false) {
+                deliveryTime: Date? = nil, data: Element, testmode: Bool? = false) {
         self.from = from
         self.replyTo = replyTo?.email
         self.to = to?.stringArray.joined(separator: ",")
@@ -199,12 +199,11 @@ public struct MailgunEmailPlus<Element: Codable>: MailgunEmailType {
         self.subject = subject
         self.attachments = attachments
         //self.testmode = testmode
-//        if let deliveryTime = deliveryTime {
-//            let formatter = DateFormatter()
-//            formatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss Z"
-//            self.deliveryTime = formatter.string(from: deliveryTime)
-//        }
-        self.deliveryTime = deliveryTime
+        if let deliveryTime = deliveryTime {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss Z"
+            self.deliveryTime = formatter.string(from: deliveryTime)
+        }
 //        let personalizations = [to!.first!.rawEmail : data]
 //        if let data = try? JSONEncoder().encode(personalizations) {
 //            //self.recipientVariables = String(data: data, encoding: .utf8)!
