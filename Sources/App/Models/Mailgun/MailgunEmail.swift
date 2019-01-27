@@ -71,7 +71,7 @@ public struct MailgunEmail: MailgunEmailType {
                 html: String? = nil,
                 subject: String? = nil,
                 attachments: [EmailAttachment]? = nil,
-                recipientVariables: RecipientVariables? = nil, deliveryTime: Date? = nil, testmode: Int? = 0) {
+                recipientVariables: RecipientVariables? = nil, deliveryTime: Date? = nil, testmode: Bool? = false) {
         self.from = from
         self.replyTo = replyTo?.email
         self.to = to?.stringArray.joined(separator: ",")
@@ -81,7 +81,7 @@ public struct MailgunEmail: MailgunEmailType {
         self.html = html
         self.subject = subject
         self.attachments = attachments
-        self.testmode = testmode == 1
+        //self.testmode = testmode
         if let deliveryTime = deliveryTime {
             let formatter = DateFormatter()
             formatter.dateFormat = "E, d MMM yyyy HH:mm:ss Z"
@@ -188,7 +188,7 @@ public struct MailgunEmailPlus<Element: Codable>: MailgunEmailType {
                 html: String? = nil,
                 subject: String? = nil,
                 attachments: [EmailAttachment]? = nil,
-                deliveryTime: Date? = nil, data: Element, testmode: Int? = 0) {
+                deliveryTime: Date? = nil, data: Element, testmode: Bool? = false) {
         self.from = from
         self.replyTo = replyTo?.email
         self.to = to?.stringArray.joined(separator: ",")
@@ -198,7 +198,7 @@ public struct MailgunEmailPlus<Element: Codable>: MailgunEmailType {
         self.html = html
         self.subject = subject
         self.attachments = attachments
-        self.testmode = testmode == 1
+        //self.testmode = testmode
         if let deliveryTime = deliveryTime {
             let formatter = DateFormatter()
             formatter.dateFormat = "E, d MMM yyyy HH:mm:ss Z"
