@@ -233,7 +233,7 @@ public struct Message: Content {
     
     /// An array of objects in which you can specify any attachments you want to include.
     public var attachments: [EmailAttachment]?
-    public var deliveryTime: Date?
+    public var deliveryTime: String?
     
     public typealias RecipientVariables = [String: [String: String]]
     
@@ -292,7 +292,7 @@ protocol MessageLeaf: Content {
     var subject: String? { get set }
     var from: String { get set }
     var replyTo: String? { get set }
-    var deliveryTime: Date? { get set }
+    var deliveryTime: String? { get set }
     var recipientVariables: [String: [String: String]]? { get set }
     var testmode: Bool? { get set }
 }
@@ -315,7 +315,7 @@ public struct EventRegistration: MessageLeaf {
     var subject: String?
     var from: String
     var replyTo: String?
-    var deliveryTime: Date?
+    var deliveryTime: String?
     var testmode: Bool?
     var recipientVariables: [String: [String: String]]?
 }
@@ -376,7 +376,7 @@ public struct Invite: MessageLeaf {
     var subject: String?
     var from: String
     var replyTo: String?
-    var deliveryTime: Date?
+    var deliveryTime: String?
     var testmode: Bool?
     var recipientVariables: [String: [String: String]]?
 }
