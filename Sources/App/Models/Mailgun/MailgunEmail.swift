@@ -30,6 +30,7 @@ public protocol MailgunEmailType: Content {
     var attachments: [EmailAttachment]? { get set }
     var recipientVariables: String? { get set }
     var deliveryTime: String? { get set }
+    var testmode: Bool? { get set }
 }
 
 public struct MailgunEmail: MailgunEmailType {
@@ -61,7 +62,7 @@ public struct MailgunEmail: MailgunEmailType {
     
     public var recipientVariables: String?
     public var deliveryTime: String?
-    //public var testmode: Bool?
+    public var testmode: Bool?
     
     public init(from: String? = nil, replyTo: EmailAddress? = nil,
                 cc: [EmailAddress]? = nil,
@@ -81,7 +82,7 @@ public struct MailgunEmail: MailgunEmailType {
         self.html = html
         self.subject = subject
         self.attachments = attachments
-        //self.testmode = testmode
+        self.testmode = testmode
         if let deliveryTime = deliveryTime {
             let formatter = DateFormatter()
             formatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss Z"
@@ -127,7 +128,7 @@ public struct MailgunEmail: MailgunEmailType {
         case attachments
         case recipientVariables = "recipient-variables"
         case deliveryTime = "o:deliverytime"
-        //case testmode = "o:testmode"
+        case testmode = "o:testmode"
     }
 }
 
@@ -172,7 +173,7 @@ public struct MailgunEmailPlus<Element: Codable>: MailgunEmailType {
     //var data: Element
     public var recipientVariables: String?
     public var deliveryTime: String?
-    //public var testmode: Bool?
+    public var testmode: Bool?
     
     public static var defaultContentType: MediaType {
         get {
@@ -198,7 +199,7 @@ public struct MailgunEmailPlus<Element: Codable>: MailgunEmailType {
         self.html = html
         self.subject = subject
         self.attachments = attachments
-        //self.testmode = testmode
+        self.testmode = testmode
         if let deliveryTime = deliveryTime {
             let formatter = DateFormatter()
             formatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss Z"
@@ -225,7 +226,7 @@ public struct MailgunEmailPlus<Element: Codable>: MailgunEmailType {
         case attachments = "attachment"
         case recipientVariables = "recipient-variables"
         case deliveryTime = "o:deliverytime"
-        //case testmode = "o:testmode"
+        case testmode = "o:testmode"
     }
 }
 
