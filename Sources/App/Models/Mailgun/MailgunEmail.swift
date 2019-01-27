@@ -61,7 +61,7 @@ public struct MailgunEmail: MailgunEmailType {
     
     public var recipientVariables: String?
     public var deliveryTime: String?
-    public var testmode: String?
+    public var testmode: Bool?
     
     public init(from: String? = nil, replyTo: EmailAddress? = nil,
                 cc: [EmailAddress]? = nil,
@@ -71,7 +71,7 @@ public struct MailgunEmail: MailgunEmailType {
                 html: String? = nil,
                 subject: String? = nil,
                 attachments: [EmailAttachment]? = nil,
-                recipientVariables: RecipientVariables? = nil, deliveryTime: Date? = nil, testmode: Bool? = false) {
+                recipientVariables: RecipientVariables? = nil, deliveryTime: Date? = nil, testmode: Int? = 0) {
         self.from = from
         self.replyTo = replyTo?.email
         self.to = to?.stringArray.joined(separator: ",")
@@ -81,9 +81,7 @@ public struct MailgunEmail: MailgunEmailType {
         self.html = html
         self.subject = subject
         self.attachments = attachments
-        if let testmode = testmode {
-            self.testmode = testmode ? "true" : "false"
-        }
+        self.testmode = testmode == 1
         if let deliveryTime = deliveryTime {
             let formatter = DateFormatter()
             formatter.dateFormat = "E, d MMM yyyy HH:mm:ss Z"
@@ -174,7 +172,7 @@ public struct MailgunEmailPlus<Element: Codable>: MailgunEmailType {
     //var data: Element
     public var recipientVariables: String?
     public var deliveryTime: String?
-    public var testmode: String?
+    public var testmode: Bool?
     
     public static var defaultContentType: MediaType {
         get {
@@ -190,7 +188,7 @@ public struct MailgunEmailPlus<Element: Codable>: MailgunEmailType {
                 html: String? = nil,
                 subject: String? = nil,
                 attachments: [EmailAttachment]? = nil,
-                deliveryTime: Date? = nil, data: Element, testmode: Bool? = false) {
+                deliveryTime: Date? = nil, data: Element, testmode: Int? = 0) {
         self.from = from
         self.replyTo = replyTo?.email
         self.to = to?.stringArray.joined(separator: ",")
@@ -200,9 +198,7 @@ public struct MailgunEmailPlus<Element: Codable>: MailgunEmailType {
         self.html = html
         self.subject = subject
         self.attachments = attachments
-        if let testmode = testmode {
-            self.testmode = testmode ? "true" : "false"
-        }
+        self.testmode = testmode == 1
         if let deliveryTime = deliveryTime {
             let formatter = DateFormatter()
             formatter.dateFormat = "E, d MMM yyyy HH:mm:ss Z"

@@ -122,7 +122,7 @@ struct MessagesController: RouteCollection {
                     let html = String(data: htmlView.data, encoding: .utf8) ?? ""
                     let text = String(data: textView.data, encoding: .utf8) ?? ""
                     let subject = String(data: subjectView.data, encoding: .utf8) ?? ""
-                    let mailgunEmail = MailgunEmailPlus(from: entity.from, replyTo: EmailAddress(email: entity.replyTo ?? ""), cc: ccAddresses, bcc: bccAddresses, to: toAddresses, text: text, html: html, subject: subject, attachments: entity.attachments, deliveryTime: entity.deliveryTime, data: entity.data, testmode: entity.testmode)
+                    let mailgunEmail = MailgunEmailPlus(from: entity.from, replyTo: EmailAddress(email: entity.replyTo ?? ""), cc: ccAddresses, bcc: bccAddresses, to: toAddresses, text: text, html: html, subject: subject, attachments: entity.attachments, deliveryTime: entity.deliveryTime, data: entity.data, testmode: entity.testmode ?? 0)
                     
                     return try mailgun.send(apiKey: token.token, domain: user.domain, mailgunEmail, on: req)
                     
@@ -134,7 +134,7 @@ struct MessagesController: RouteCollection {
                 let html = String(data: htmlView.data, encoding: .utf8) ?? ""
                 let text = String(data: textView.data, encoding: .utf8) ?? ""
                 let subject = String(data: subjectView.data, encoding: .utf8) ?? ""
-                let mailgunEmail = MailgunEmailPlus(from: entity.from, replyTo: EmailAddress(email: entity.replyTo ?? ""), cc: ccAddresses, bcc: bccAddresses, to: toAddresses, text: text, html: html, subject: subject, attachments: entity.attachments, deliveryTime: entity.deliveryTime, data: entity.data, testmode: entity.testmode)
+                let mailgunEmail = MailgunEmailPlus(from: entity.from, replyTo: EmailAddress(email: entity.replyTo ?? ""), cc: ccAddresses, bcc: bccAddresses, to: toAddresses, text: text, html: html, subject: subject, attachments: entity.attachments, deliveryTime: entity.deliveryTime, data: entity.data, testmode: entity.testmode ?? 0)
                 
                 return try mailgun.send(apiKey: token.token, domain: user.domain, mailgunEmail, on: req)
                 
@@ -239,7 +239,7 @@ public struct Message: Content {
     
     public var recipientVariables: RecipientVariables?
     public var template: String?
-    public var testmode: Bool?
+    public var testmode: Int?
     
     public init(from: EmailAddress? = nil, replyTo: EmailAddress? = nil,
                 cc: [EmailAddress]? = nil,
@@ -249,7 +249,7 @@ public struct Message: Content {
                 html: String? = nil,
                 subject: String? = nil,
                 attachments: [EmailAttachment]? = nil,
-                recipientVariables: RecipientVariables? = nil, template: String? = nil, testmode: Bool = false) {
+                recipientVariables: RecipientVariables? = nil, template: String? = nil, testmode: Int = 0) {
         self.from = from
         self.replyTo = replyTo
         self.to = to
@@ -294,7 +294,7 @@ protocol MessageLeaf: Content {
     var replyTo: String? { get set }
     var deliveryTime: Date? { get set }
     var recipientVariables: [String: [String: String]]? { get set }
-    var testmode: Bool? { get set }
+    var testmode: Int? { get set }
 }
 
 protocol Personalizations: Content {
@@ -316,7 +316,7 @@ public struct EventRegistration: MessageLeaf {
     var from: String
     var replyTo: String?
     var deliveryTime: Date?
-    var testmode: Bool?
+    var testmode: Int?
     var recipientVariables: [String: [String: String]]?
 }
 
@@ -377,7 +377,7 @@ public struct Invite: MessageLeaf {
     var from: String
     var replyTo: String?
     var deliveryTime: Date?
-    var testmode: Bool?
+    var testmode: Int?
     var recipientVariables: [String: [String: String]]?
 }
 
