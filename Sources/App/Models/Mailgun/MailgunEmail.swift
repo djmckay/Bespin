@@ -61,7 +61,7 @@ public struct MailgunEmail: MailgunEmailType {
     
     public var recipientVariables: String?
     public var deliveryTime: String?
-    public var testmode: Bool?
+    //public var testmode: Bool?
     
     public init(from: String? = nil, replyTo: EmailAddress? = nil,
                 cc: [EmailAddress]? = nil,
@@ -127,7 +127,7 @@ public struct MailgunEmail: MailgunEmailType {
         case attachments
         case recipientVariables = "recipient-variables"
         case deliveryTime = "o:deliverytime"
-        case testmode = "o:testmode"
+        //case testmode = "o:testmode"
     }
 }
 
@@ -172,7 +172,7 @@ public struct MailgunEmailPlus<Element: Codable>: MailgunEmailType {
     //var data: Element
     public var recipientVariables: String?
     public var deliveryTime: String?
-    public var testmode: Bool?
+    //public var testmode: Bool?
     
     public static var defaultContentType: MediaType {
         get {
@@ -225,7 +225,7 @@ public struct MailgunEmailPlus<Element: Codable>: MailgunEmailType {
         case attachments = "attachment"
         case recipientVariables = "recipient-variables"
         case deliveryTime = "o:deliverytime"
-        case testmode = "o:testmode"
+        //case testmode = "o:testmode"
     }
 }
 
