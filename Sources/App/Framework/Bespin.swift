@@ -133,6 +133,21 @@ public final class BespinErrorMiddleware: Middleware, ServiceType {
 }
 
 
-
+extension Bool: MultipartPartConvertible {
+    public func convertToMultipartPart() throws -> MultipartPart {
+        return MultipartPart(data: description)
+    }
+    
+    public static func convertFromMultipartPart(_ part: MultipartPart) throws -> Bool {
+        guard let stringValue = String(data: part.data, encoding: .utf8) else {
+            throw MultipartError(identifier: "utf8", reason: "Could not convert `Data` to UTF-8 `Bool`.")
+        }
+        let options = ["true": true, "false": false]
+        guard let option = options[stringValue] else {
+            throw MultipartError(identifier: "boolean", reason: "Could not convert `Data` to boolean `Bool`. Must be one of \(options)")
+        }
+        return option
+    }
+}
 
 
