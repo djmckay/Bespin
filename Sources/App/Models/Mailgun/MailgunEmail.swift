@@ -27,7 +27,7 @@ public protocol MailgunEmailType: Content {
     var html: String? { get set }
     
     /// An array of objects in which you can specify any attachments you want to include.
-    var attachments: [EmailAttachment]? { get set }
+    //var attachments: [EmailAttachment]? { get set }
     var attachment1: EmailAttachment? { get set }
     var attachment2: EmailAttachment? { get set }
     var recipientVariables: String? { get set }
@@ -58,7 +58,7 @@ public struct MailgunEmail: MailgunEmailType {
     public var html: String?
     
     /// An array of objects in which you can specify any attachments you want to include.
-    public var attachments: [EmailAttachment]?
+    //public var attachments: [EmailAttachment]?
     public var attachment1: EmailAttachment?
     public var attachment2: EmailAttachment?
     
@@ -85,7 +85,7 @@ public struct MailgunEmail: MailgunEmailType {
         self.text = text
         self.html = html
         self.subject = subject
-        self.attachments = attachments
+        //self.attachments = attachments
         self.attachment1 = attachments?.first
         if attachments?.count == 2 {
             self.attachment2 = attachments![1]
@@ -179,7 +179,7 @@ public struct MailgunEmailPlus<Element: Codable>: MailgunEmailType {
     public var html: String?
     
     /// An array of objects in which you can specify any attachments you want to include.
-    public var attachments: [EmailAttachment]?
+    //public var attachments: [EmailAttachment]?
     public var attachment1: EmailAttachment?
     public var attachment2: EmailAttachment?
     //var data: Element
@@ -210,7 +210,7 @@ public struct MailgunEmailPlus<Element: Codable>: MailgunEmailType {
         self.text = text
         self.html = html
         self.subject = subject
-        self.attachments = attachments
+        //self.attachments = attachments
         self.testmode = testmode
         self.attachment1 = attachments?.first
         if attachments?.count == 2 {
