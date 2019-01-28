@@ -125,7 +125,7 @@ public struct MailgunEmail: MailgunEmailType {
         case text
         case html
         case subject
-        case attachments
+        case attachments = "attachment"
         case recipientVariables = "recipient-variables"
         case deliveryTime = "o:deliverytime"
         case testmode = "o:testmode"
