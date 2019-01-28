@@ -28,6 +28,8 @@ public protocol MailgunEmailType: Content {
     
     /// An array of objects in which you can specify any attachments you want to include.
     var attachments: [EmailAttachment]? { get set }
+    var attachment1: EmailAttachment? { get set }
+    var attachment2: EmailAttachment? { get set }
     var recipientVariables: String? { get set }
     var deliveryTime: String? { get set }
     var testmode: Bool? { get set }
@@ -57,6 +59,8 @@ public struct MailgunEmail: MailgunEmailType {
     
     /// An array of objects in which you can specify any attachments you want to include.
     public var attachments: [EmailAttachment]?
+    public var attachment1: EmailAttachment?
+    public var attachment2: EmailAttachment?
     
     public typealias RecipientVariables = [String: [String: String]]
     
@@ -82,6 +86,10 @@ public struct MailgunEmail: MailgunEmailType {
         self.html = html
         self.subject = subject
         self.attachments = attachments
+        self.attachment1 = attachments?.first
+        if attachments?.count == 2 {
+            self.attachment2 = attachments![1]
+        }
         self.testmode = testmode
         if let deliveryTime = deliveryTime {
             let formatter = DateFormatter()
@@ -125,7 +133,9 @@ public struct MailgunEmail: MailgunEmailType {
         case text
         case html
         case subject
-        case attachments = "attachment"
+        //case attachments = "attachment"
+        case attachment1 = "attachment[0]"
+        case attachment2 = "attachment[1]"
         case recipientVariables = "recipient-variables"
         case deliveryTime = "o:deliverytime"
         case testmode = "o:testmode"
@@ -170,6 +180,8 @@ public struct MailgunEmailPlus<Element: Codable>: MailgunEmailType {
     
     /// An array of objects in which you can specify any attachments you want to include.
     public var attachments: [EmailAttachment]?
+    public var attachment1: EmailAttachment?
+    public var attachment2: EmailAttachment?
     //var data: Element
     public var recipientVariables: String?
     public var deliveryTime: String?
@@ -200,6 +212,10 @@ public struct MailgunEmailPlus<Element: Codable>: MailgunEmailType {
         self.subject = subject
         self.attachments = attachments
         self.testmode = testmode
+        self.attachment1 = attachments?.first
+        if attachments?.count == 2 {
+            self.attachment2 = attachments![1]
+        }
         if let deliveryTime = deliveryTime {
             let formatter = DateFormatter()
             formatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss Z"
@@ -223,7 +239,9 @@ public struct MailgunEmailPlus<Element: Codable>: MailgunEmailType {
         case text
         case html
         case subject
-        case attachments = "attachment"
+        //case attachments = "attachment"
+        case attachment1 = "attachment[0]"
+        case attachment2 = "attachment[1]"
         case recipientVariables = "recipient-variables"
         case deliveryTime = "o:deliverytime"
         case testmode = "o:testmode"
