@@ -74,6 +74,9 @@ struct UsersController: BespinController {
     }
     
     func updateHandler(_ req: Request) throws -> EventLoopFuture<User.Public> {
+        let id = req.parameters.rawValues(for: User.self).first!
+        let user = try req.requireAuthenticated(User.self)
+        guard id == user.id?.uuidString else { throw  Abort(.forbidden, reason: "Invalid user") }
         return try flatMap(to: T.Public.self,
                            req.parameters.next(T.self),
                            req.content.decode(T.self)) { item, updatedItem in
@@ -87,6 +90,9 @@ struct UsersController: BespinController {
     }
     
     func changePassword(_ req: Request) throws -> EventLoopFuture<User.Public> {
+        let id = req.parameters.rawValues(for: User.self).first!
+        let user = try req.requireAuthenticated(User.self)
+        guard id == user.id?.uuidString else { throw  Abort(.forbidden, reason: "Invalid user") }
         return try flatMap(to: T.Public.self,
                            req.parameters.next(T.self),
                            req.content.decode(T.self)) { item, updatedItem in
