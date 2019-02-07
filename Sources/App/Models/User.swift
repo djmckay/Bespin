@@ -15,7 +15,7 @@ final class User: BespinModel {
     var name: String
     var domain: String
     var username: String
-    var password: String
+    var password: String?
     
     init(name: String, username: String, password: String, domain: String) {
         self.name = name
@@ -50,8 +50,6 @@ extension User: Migration {
 }
 extension User: Parameter {}
 
-extension User.Public: Parameter {}
-
 extension User.Public: Content {}
 
 extension User {
@@ -70,7 +68,7 @@ extension Future where T: User {
 
 extension User: BasicAuthenticatable {
     static let usernameKey: UsernameKey = \User.username
-    static let passwordKey: PasswordKey = \User.password
+    static let passwordKey: PasswordKey = \User.password!
     
 }
 

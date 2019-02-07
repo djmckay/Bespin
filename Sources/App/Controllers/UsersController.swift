@@ -24,7 +24,7 @@ struct UsersController: BespinController {
         let basicAuthGroup = usersRoute.grouped(basicAuthMiddleware, guardAuthMiddleware)
         basicAuthGroup.post(Token.self, at: User.parameter, "generateApiKey", use: generateApiKey)
         basicAuthGroup.post(User.parameter, "changePassword", use: changePassword)
-        basicAuthGroup.post(User.Public.parameter, use: updateHandler)
+        basicAuthGroup.post(User.parameter, use: updateHandler)
         basicAuthGroup.get(User.parameter, use: getHandler)
         basicAuthGroup.get("login", use: loginHandler)
         //let basicAuthGroup = usersRoute.grouped(basicAuthMiddleware)
@@ -42,7 +42,7 @@ struct UsersController: BespinController {
     }
     
     func createHandler(_ req: Request, entity: User) throws -> Future<Public> {
-        entity.password = try BCrypt.hash(entity.password)
+        entity.password = try BCrypt.hash(entity.password!)
         return entity.save(on: req).convertToPublic()
     }
     
@@ -90,7 +90,7 @@ struct UsersController: BespinController {
         return try flatMap(to: T.Public.self,
                            req.parameters.next(T.self),
                            req.content.decode(T.self)) { item, updatedItem in
-                            item.password = try BCrypt.hash(updatedItem.password)
+                            item.password = try BCrypt.hash(updatedItem.password!)
                             return item.save(on: req).convertToPublic()
         }
     }
