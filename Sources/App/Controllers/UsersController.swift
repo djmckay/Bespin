@@ -24,7 +24,7 @@ struct UsersController: BespinController {
         let basicAuthGroup = usersRoute.grouped(basicAuthMiddleware, guardAuthMiddleware)
         basicAuthGroup.post(Token.self, at: User.parameter, "generateApiKey", use: generateApiKey)
         basicAuthGroup.post(User.parameter, "changePassword", use: changePassword)
-        basicAuthGroup.post(User.parameter, use: updateHandler)
+        basicAuthGroup.post(User.Public.parameter, use: updateHandler)
         basicAuthGroup.get(User.parameter, use: getHandler)
         basicAuthGroup.get("login", use: loginHandler)
         //let basicAuthGroup = usersRoute.grouped(basicAuthMiddleware)
