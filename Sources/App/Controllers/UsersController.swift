@@ -23,6 +23,8 @@ struct UsersController: BespinController {
         let guardAuthMiddleware = User.guardAuthMiddleware()
         let basicAuthGroup = usersRoute.grouped(basicAuthMiddleware, guardAuthMiddleware)
         basicAuthGroup.post(Token.self, at: User.parameter, "generateApiKey", use: generateApiKey)
+        basicAuthGroup.post(User.parameter, "changePassword", use: changePassword)
+        basicAuthGroup.post(User.parameter, use: updateHandler)
         basicAuthGroup.get(User.parameter, use: getHandler)
         basicAuthGroup.get("login", use: loginHandler)
         //let basicAuthGroup = usersRoute.grouped(basicAuthMiddleware)
@@ -75,11 +77,20 @@ struct UsersController: BespinController {
         return try flatMap(to: T.Public.self,
                            req.parameters.next(T.self),
                            req.content.decode(T.self)) { item, updatedItem in
-                            item.password = try BCrypt.hash(updatedItem.password)
+                            //item.password = try BCrypt.hash(updatedItem.password)
                             item.domain = updatedItem.domain
                             item.username = updatedItem.username
                             //                            item.short = updatedItem.short
                             //                            item.long = updatedItem.long
+                            return item.save(on: req).convertToPublic()
+        }
+    }
+    
+    func changePassword(_ req: Request) throws -> EventLoopFuture<User.Public> {
+        return try flatMap(to: T.Public.self,
+                           req.parameters.next(T.self),
+                           req.content.decode(T.self)) { item, updatedItem in
+                            item.password = try BCrypt.hash(updatedItem.password)
                             return item.save(on: req).convertToPublic()
         }
     }
