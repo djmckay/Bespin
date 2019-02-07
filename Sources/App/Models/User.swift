@@ -50,6 +50,8 @@ extension User: Migration {
 }
 extension User: Parameter {}
 
+extension User.Public: Parameter {}
+
 extension User.Public: Content {}
 
 extension User {
