@@ -29,6 +29,7 @@ public final class MailgunClient: Service {
         let authKeyEncoded = try encode(apiKey: apiKey)
             var headers: HTTPHeaders = [:]
             headers.add(name: HTTPHeaderName.authorization, value: "Basic \(authKeyEncoded)")
+            headers.add(name: "x-mailgun-native-send", value: "true")
             let encoder = JSONEncoder()
             encoder.dateEncodingStrategy = .secondsSince1970
             
@@ -49,6 +50,7 @@ public final class MailgunClient: Service {
             
             var headers: HTTPHeaders = [:]
             headers.add(name: HTTPHeaderName.authorization, value: "Basic \(authKeyEncoded)")
+            headers.add(name: "x-mailgun-native-send", value: "true")
             let encoder = JSONEncoder()
             encoder.dateEncodingStrategy = .secondsSince1970
             
