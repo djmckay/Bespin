@@ -53,10 +53,10 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     migrations.add(model: EmailTemplate.self, database: .Bespin)
     migrations.add(model: Token.self, database: .Bespin)
     if env != .testing && env != .development {
-        migrations.add(migration: EmailTemplateAddUserRelationship.self, database: .Bespin)
-        migrations.add(migration: TokenAddUserRelationship.self, database: .Bespin)
+//        migrations.add(migration: EmailTemplateAddUserRelationship.self, database: .Bespin)
+//        migrations.add(migration: TokenAddUserRelationship.self, database: .Bespin)
     }
-    //services.register(migrations)
+    services.register(migrations)
 
     var commandConfig = CommandConfig.default()
     commandConfig.useFluentCommands()
