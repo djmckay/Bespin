@@ -35,7 +35,6 @@ public final class MailgunClient: Service {
             print(apiEndpoint+domain+"/messages")
             let request = httpClient.post(apiEndpoint+domain+"/messages", headers: headers) { req in
                 let data = try encoder.encode(email)
-                print(String(data: data, encoding: .utf8)!)
                 try req.content.encode(email)
             }
             return request.map { response in
@@ -55,7 +54,6 @@ public final class MailgunClient: Service {
             print(apiEndpoint+domain+"/messages")
             let request = httpClient.post(apiEndpoint+domain+"/messages", headers: headers) { req in
                 let data = try encoder.encode(email)
-                print(String(data: data, encoding: .utf8)!)
                 try req.content.encode(email)
             }
             return request.map { response in
