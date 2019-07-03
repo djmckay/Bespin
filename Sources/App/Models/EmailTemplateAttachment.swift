@@ -38,7 +38,7 @@ extension EmailTemplateAttachment: Migration {
             builder.field(for: \.filename)
             builder.field(for: \.data)
             builder.field(for: \.templateID)
-            builder.reference(from: \.templateID, to: \EmailTemplate.id)
+            //builder.reference(from: \.templateID, to: \EmailTemplate.id)
         })
     }
     
