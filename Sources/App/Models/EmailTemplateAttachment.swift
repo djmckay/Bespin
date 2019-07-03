@@ -56,8 +56,8 @@ extension Future where T: EmailTemplateAttachment {
     }
 }
 
-extension EmailTemplateAttachment {
-    var template: Parent<EmailTemplateAttachment, EmailTemplate> {
-        return parent(\.templateID)
-    }
-}
+//extension EmailTemplateAttachment {
+//    var template: Parent<EmailTemplateAttachment, EmailTemplate> {
+//        return parent(\.templateID)
+//    }
+//}
