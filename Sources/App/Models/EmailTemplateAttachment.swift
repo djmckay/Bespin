@@ -17,9 +17,9 @@ final class EmailTemplateAttachment: BespinModel {
     var id: UUID?
     var templateID: EmailTemplate.ID
     var filename: String
-    var data: Data
+    var data: String
     
-    init(filename: String, data: Data, templateID: EmailTemplate.ID) {
+    init(filename: String, data: String, templateID: EmailTemplate.ID) {
         self.filename = filename
         self.data = data
         self.templateID = templateID
@@ -36,7 +36,7 @@ extension EmailTemplateAttachment: Migration {
         return MySQLDatabase.create(EmailTemplateAttachment.self, on: conn, closure: { (builder) in
             builder.field(for: \.id)
             builder.field(for: \.filename)
-            builder.field(for: \.data)
+            builder.field(for: \.data, type: .longtext)
             builder.field(for: \.templateID)
             //builder.reference(from: \.templateID, to: \EmailTemplate.id)
         })
