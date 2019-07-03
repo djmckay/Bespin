@@ -122,9 +122,22 @@ struct MessagesController: RouteCollection {
                     let html = String(data: htmlView.data, encoding: .utf8) ?? ""
                     let text = String(data: textView.data, encoding: .utf8) ?? ""
                     let subject = String(data: subjectView.data, encoding: .utf8) ?? ""
-                    let mailgunEmail = MailgunEmailPlus(from: entity.from, replyTo: EmailAddress(email: entity.replyTo ?? ""), cc: ccAddresses, bcc: bccAddresses, to: toAddresses, text: text, html: html, subject: subject, attachments: entity.attachments, deliveryTime: entity.deliveryTime, data: entity.data, testmode: entity.testmode)
+                    if let templateAttachments = template?.attachments {
+                        return try templateAttachments.query(on: req).all().flatMap({ (templates) -> EventLoopFuture<Response> in
+                            let messageAttachments = templates.compactMap({ (attachment) -> EmailAttachment in
+                                return EmailAttachment(data: attachment.data, filename: attachment.filename)
+                            })
+                            
+                            let mailgunEmail = MailgunEmailPlus(from: entity.from, replyTo: EmailAddress(email: entity.replyTo ?? ""), cc: ccAddresses, bcc: bccAddresses, to: toAddresses, text: text, html: html, subject: subject, attachments: entity.attachments ?? messageAttachments, deliveryTime: entity.deliveryTime, data: entity.data, testmode: entity.testmode)
+                            
+                            return try mailgun.send(apiKey: token.token, domain: user.domain, mailgunEmail, on: req)
+                        })
+                    } else {
+                        let mailgunEmail = MailgunEmailPlus(from: entity.from, replyTo: EmailAddress(email: entity.replyTo ?? ""), cc: ccAddresses, bcc: bccAddresses, to: toAddresses, text: text, html: html, subject: subject, attachments: entity.attachments, deliveryTime: entity.deliveryTime, data: entity.data, testmode: entity.testmode)
+                        
+                        return try mailgun.send(apiKey: token.token, domain: user.domain, mailgunEmail, on: req)
+                    }
                     
-                    return try mailgun.send(apiKey: token.token, domain: user.domain, mailgunEmail, on: req)
                     
                 })
             })
@@ -180,9 +193,18 @@ struct MessagesController: RouteCollection {
                             }
                             
                         }
-                        let mailgunEmail = MailgunEmail(from: entity.from?.email ?? template.from, replyTo: entity.replyTo ?? templateReplyTo, cc: entity.cc ?? templateCc, bcc: entity.bcc ?? templateBcc, to: entity.to, text: template.text, html: template.html, subject: entity.subject ?? template.subject, attachments: entity.attachments, recipientVariables: entity.recipientVariables, deliveryTime: entity.deliveryTime, testmode: entity.testmode)
+                        return try template.attachments.query(on: req).all().flatMap({ (templates) -> EventLoopFuture<Response> in
+                            let messageAttachments = templates.compactMap({ (attachment) -> EmailAttachment in
+                                return EmailAttachment(data: attachment.data, filename: attachment.filename)
+                            })
+                            
+                            let mailgunEmail = MailgunEmail(from: entity.from?.email ?? template.from, replyTo: entity.replyTo ?? templateReplyTo, cc: entity.cc ?? templateCc, bcc: entity.bcc ?? templateBcc, to: entity.to, text: template.text, html: template.html, subject: entity.subject ?? template.subject, attachments: entity.attachments ?? messageAttachments, recipientVariables: entity.recipientVariables, deliveryTime: entity.deliveryTime, testmode: entity.testmode)
+                            
+                            return try mailgun.send(apiKey: token.token, domain: user.domain, mailgunEmail, on: req)
+                        })
                         
-                        return try mailgun.send(apiKey: token.token, domain: user.domain, mailgunEmail, on: req)
+                        
+                        
                     })
                 } else {
                     let mailgun = try req.make(MailgunClient.self)

@@ -269,6 +269,7 @@ final class MessagesTests: XCTestCase {
         
         let vendor2 = EventVendor(name: "invitee two")
         let data2 = InviteTemplateData(sender: sender, vendor: vendor2, event: event, footer: "footer", optionals: [], additionals: [], footerLinks: [])
+        
         let invite2 = Invite(leaf: leaf, data: data2, to: ["dj.leon.mckay@gmail.com"], cc: nil, bcc: nil, attachments: nil, subject: nil, from: senderEmail+domain, replyTo: nil, deliveryTime: Date().addingTimeInterval(60*1), recipientVariables: nil)
         let responses = try app.getResponse(to: uri+MessagesController.batchInvites, method: .POST, headers: headers, data: [invite, invite2], decodeTo: [MessageResponse].self)
         for response in responses {

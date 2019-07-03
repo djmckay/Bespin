@@ -72,3 +72,9 @@ extension Future where T: EmailTemplate {
         })
     }
 }
+
+extension EmailTemplate {
+    var attachments: Children<EmailTemplate, EmailTemplateAttachment> {
+        return children(\.templateID)
+    }
+}
