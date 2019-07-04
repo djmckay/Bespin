@@ -11,7 +11,7 @@ import JWT
 
 struct EmailTemplateAttachmentsController: BespinController {
     func createHandler(_ req: Request, entity: EmailTemplateAttachment) throws -> EventLoopFuture<EmailTemplateAttachment> {
-        let id = try req.parameters.next(EmailTemplate.self)
+        let id = try req.parameters.next(Token.self)
         return try req.parameters.next(EmailTemplate.self).flatMap({ (template) -> EventLoopFuture<EmailTemplateAttachment> in
             entity.templateID = template.id!
             return try Storage.upload(bytes: entity.data.data(using: .utf8)!, fileName: entity.filename, fileExtension: nil, mime: nil, folder: template.name, on: req).flatMap({ (path) -> EventLoopFuture<EmailTemplateAttachment> in
@@ -26,17 +26,19 @@ struct EmailTemplateAttachmentsController: BespinController {
     }
     
     func getAllHandler(_ req: Request) throws -> EventLoopFuture<[EmailTemplateAttachment]> {
+        let id = try req.parameters.next(Token.self)
         return try req.parameters.next(EmailTemplate.self).flatMap({ (template) -> EventLoopFuture<[EmailTemplateAttachment]> in
             return try template.attachments.query(on: req).all()
         })
     }
     
     func getHandler(_ req: Request) throws -> EventLoopFuture<EmailTemplateAttachment> {
+        let id = try req.parameters.next(Token.self)
         return try req.parameters.next(T.self).convertToPublic()
     }
     
     func updateHandler(_ req: Request) throws -> EventLoopFuture<EmailTemplateAttachment> {
-        let id = try req.parameters.next(EmailTemplate.self)
+        let id = try req.parameters.next(Token.self)
         print(id)
         return try flatMap(to: T.self,
                            req.parameters.next(T.self),
@@ -48,6 +50,8 @@ struct EmailTemplateAttachmentsController: BespinController {
     }
     
     func deleteHandler(_ req: Request) throws -> EventLoopFuture<HTTPStatus> {
+        let id = try req.parameters.next(Token.self)
+        _ = try req.parameters.next(EmailTemplate.self)
         return try req.parameters.next(T.self).delete(on: req).transform(to: HTTPStatus.noContent)
     }
     
