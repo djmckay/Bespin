@@ -13,8 +13,8 @@ struct EmailTemplateAttachmentsController: BespinController {
     func createHandler(_ req: Request, entity: EmailTemplateAttachment) throws -> EventLoopFuture<EmailTemplateAttachment> {
         let log: Logger = try req.make(Logger.self)
         log.info("EmailTemplateAttachmentsController.createHandler")
-        let id = try req.parameters.next(Token.self)
-        
+//        let id = try req.parameters.next(Token.self)
+//        log.info("after token")
         return try req.parameters.next(EmailTemplate.self).flatMap({ (template) -> EventLoopFuture<EmailTemplateAttachment> in
             entity.templateID = template.id!
             return try Storage.upload(bytes: entity.data.data(using: .utf8)!, fileName: entity.filename, fileExtension: nil, mime: nil, folder: template.name, on: req).flatMap({ (path) -> EventLoopFuture<EmailTemplateAttachment> in
