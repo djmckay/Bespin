@@ -19,6 +19,10 @@ struct Bespin {
     
     static let BespinConfigTest = MySQLDatabaseConfig(hostname: Environment.get("DATABASE_HOSTNAME") ?? "localhost", port: 3307, username: DatabaseUsername, password: DatabasePassword, database: Environment.get("DATABASE_DB") ?? "bespin-test")
     static let BespinTest = MySQLDatabase(config: BespinConfigTest)
+    
+    static let Storage_Bucket: String = Environment.get("S3_BUCKET") ?? "bucket"
+    static let Storage_Key: String = Environment.get("S3_ACCESS_KEY") ?? "key"
+    static let Storage_Secret: String = Environment.get("S3_SECRET_KEY") ?? "secret"
 }
 
 extension DatabaseIdentifier {
