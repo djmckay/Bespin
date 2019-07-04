@@ -18,7 +18,7 @@ struct EmailTemplateAttachmentsController: BespinController {
         return try req.parameters.next(EmailTemplate.self).flatMap({ (template) -> EventLoopFuture<EmailTemplateAttachment> in
             log.info(template.name)
             entity.templateID = template.id!
-            return try Storage.upload(bytes: entity.data.data(using: .utf8)!, fileName: entity.filename, fileExtension: nil, mime: nil, folder: template.name, on: req).flatMap({ (path) -> EventLoopFuture<EmailTemplateAttachment> in
+            return try Storage.upload(bytes: entity.data.data(using: .utf8)!, fileName: entity.filename, fileExtension: nil, mime: nil, folder: template.id?.uuidString, on: req).flatMap({ (path) -> EventLoopFuture<EmailTemplateAttachment> in
                 //TODO: FUTURE STORE THE PATH ONLY
                 entity.path = path
                 
