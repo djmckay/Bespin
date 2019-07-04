@@ -16,7 +16,7 @@ struct EmailTemplateAttachmentsController: BespinController {
             entity.templateID = template.id!
             return try Storage.upload(bytes: entity.data.data(using: .utf8)!, fileName: entity.filename, fileExtension: nil, mime: nil, folder: template.name, on: req).flatMap({ (path) -> EventLoopFuture<EmailTemplateAttachment> in
                 //TODO: FUTURE STORE THE PATH ONLY
-                //entity.data = path
+                entity.path = path
                 let log: Logger = try req.make(Logger.self)
                 log.info(path)
                 return entity.save(on: req)
