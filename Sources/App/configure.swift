@@ -63,4 +63,14 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     var commandConfig = CommandConfig.default()
     commandConfig.useFluentCommands()
     services.register(commandConfig)
+    
+    //S3 Storage
+    let driver = try S3Driver(
+        bucket: Bespin.Storage_Bucket,
+        accessKey: Bespin.Storage_Key,
+        secretKey: Bespin.Storage_Secret,
+        pathTemplate: "/bespin/#folder/#file"
+    )
+    
+    services.register(driver, as: NetworkDriver.self)
 }
