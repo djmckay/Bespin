@@ -55,6 +55,7 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     migrations.add(model: EmailTemplateAttachment.self, database: .Bespin)
     
     if env != .testing && env != .development {
+        migrations.add(migration: AddEmailAttachmentPath.self, database: .Bespin)
 //        migrations.add(migration: EmailTemplateAddUserRelationship.self, database: .Bespin)
 //        migrations.add(migration: TokenAddUserRelationship.self, database: .Bespin)
     }
