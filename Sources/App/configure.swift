@@ -70,7 +70,9 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
         bucket: Bespin.Storage_Bucket,
         accessKey: Bespin.Storage_Key,
         secretKey: Bespin.Storage_Secret,
+        region: .usEast1,
         pathTemplate: "/bespin/#folder/#file"
+        
     )
     
     services.register(driver, as: NetworkDriver.self)
