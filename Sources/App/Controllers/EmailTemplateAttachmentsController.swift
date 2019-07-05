@@ -21,7 +21,7 @@ struct EmailTemplateAttachmentsController: BespinController {
             log.info(template.name)
             entity.templateID = template.id!
             let data = Data(base64Encoded: entity.data)!
-            return try Storage.upload(bytes: data, fileName: entity.filename, fileExtension: nil, mime: nil, folder: template.id?.uuidString, access: .authenticatedRead, on: req).flatMap({ (path) -> EventLoopFuture<EmailTemplateAttachment> in
+            return try Storage.upload(bytes: data, fileName: entity.filename, fileExtension: nil, mime: nil, folder: template.id?.uuidString, access: .privateAccess, on: req).flatMap({ (path) -> EventLoopFuture<EmailTemplateAttachment> in
                 //TODO: FUTURE STORE THE PATH ONLY
                 entity.path = path
                 
