@@ -37,22 +37,27 @@ struct EmailTemplateAttachmentsController: BespinController {
         let log: Logger = try req.make(Logger.self)
         return try req.parameters.next(EmailTemplate.self).flatMap({ (template) -> EventLoopFuture<[EmailTemplateAttachment]> in
             return try template.attachments.query(on: req).all().flatMap({ (attachments) -> EventLoopFuture<[EmailTemplateAttachment]> in
+                var storageResults: [Future<EmailTemplateAttachment>] = []
                 try attachments.forEach({ (attachment) in
                     if let path = attachment.path {
-                        let _ = try Storage.get(path: path, on: req).flatMap({ (bytes) -> EventLoopFuture<String?> in
+                        
+                        let storageData = try Storage.get(path: path, on: req).flatMap({ (bytes) -> EventLoopFuture<String?> in
                             log.info("Storage get bytes: \(bytes.count)")
                             let data = Data(bytes: bytes, count: bytes.count)
-                            
+
                             return req.future(data.base64EncodedString())
-                        }).flatMap({ (string) -> EventLoopFuture<Void> in
+                        }).flatMap({ (string) -> EventLoopFuture<EmailTemplateAttachment> in
                             if let string = string {
                                 attachment.data = string
                             }
-                            return req.future()
+                            log.info("Attachment: \(attachment)")
+                            return req.future(attachment)
                         })
+                        storageResults.append(storageData)
                     }
                 })
-                return req.future(attachments)
+                return storageResults.flatten(on: req)
+                //return req.future(attachments)
             })
         })
     }
