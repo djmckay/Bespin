@@ -35,7 +35,22 @@ struct EmailTemplateAttachmentsController: BespinController {
     func getAllHandler(_ req: Request) throws -> EventLoopFuture<[EmailTemplateAttachment]> {
         let id = try req.parameters.next(Token.self)
         return try req.parameters.next(EmailTemplate.self).flatMap({ (template) -> EventLoopFuture<[EmailTemplateAttachment]> in
-            return try template.attachments.query(on: req).all()
+            return try template.attachments.query(on: req).all().flatMap({ (attachments) -> EventLoopFuture<[EmailTemplateAttachment]> in
+                try attachments.forEach({ (attachment) in
+                    if let path = attachment.path {
+                        let _ = try Storage.get(path: path, on: req).flatMap({ (bytes) -> EventLoopFuture<String?> in
+                            let data = Data(bytes: bytes, count: bytes.count)
+                            return req.future(String(data: data, encoding: .utf8))
+                        }).flatMap({ (string) -> EventLoopFuture<Void> in
+                            if let string = string {
+                                attachment.data = string
+                            }
+                            return req.future()
+                        })
+                    }
+                })
+                return req.future(attachments)
+            })
         })
     }
     
