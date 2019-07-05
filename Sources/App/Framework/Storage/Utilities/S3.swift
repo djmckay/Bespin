@@ -352,6 +352,31 @@ public struct S3: Service {
         req.http.url = url
         return client.send(req)
     }
+    
+    public func get(path: String, container: Container) throws -> Future<Response> {
+        guard let url = URL(string: generateURL(for: path)) else {
+            throw Error.invalidPath
+        }
+        let contentType: String = "application/x-www-form-urlencoded; charset=utf-8"
+        let signedHeaders = try signer.sign(contentType: contentType, path: path)
+        
+        var headers: HTTPHeaders = [:]
+        signedHeaders.forEach {
+            headers.add(name: $0.key, value: $0.value)
+        }
+        
+        let client = try container.client()
+        let req = Request(using: container)
+        req.http.method = .GET
+        req.http.headers = headers
+        //req.http.body = HTTPBody(data: bytes)
+        req.http.url = url
+        return client.send(req)
+    }
+    
+    public func delete(file: String) throws {
+        throw Error.unimplemented
+    }
 }
 
 extension S3 {

@@ -107,11 +107,50 @@ public final class S3Driver: NetworkDriver {
         }
     }
 
-    public func get(path: String, on container: Container) throws -> Future<[UInt8]> {
-        return container.future([])
+    public func get(path: String, on container: Container) throws -> Future<Bytes> {
+        return try s3.get(path: path, container: container).map({ (response) -> ([UInt8]) in
+            guard response.http.status == .ok else {
+                throw Abort(.internalServerError, reason: response.http.body.description)
+            }
+            var bytes: [UInt8] = []
+            if let data = response.http.body.data {
+                bytes = [UInt8](data)
+            }
+            return bytes
+        })
+        
     }
 
     public func delete(path: String, on container: Container) throws -> Future<Void> {
         return container.future()
     }
+}
+
+/**
+ A single byte represented as a UInt8
+ */
+public typealias Byte = UInt8
+
+/**
+ A byte array or collection of raw data
+ */
+public typealias Bytes = [Byte]
+
+/**
+ A sliced collection of raw data
+ */
+public typealias BytesSlice = ArraySlice<Byte>
+
+// MARK: Sizes
+
+private let _bytes = 1
+private let _kilobytes = _bytes * 1000
+private let _megabytes = _kilobytes * 1000
+private let _gigabytes = _megabytes * 1000
+
+extension Int {
+    public var bytes: Int { return self }
+    public var kilobytes: Int { return self * _kilobytes }
+    public var megabytes: Int { return self * _megabytes }
+    public var gigabytes: Int { return self * _gigabytes }
 }
