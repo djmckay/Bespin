@@ -15,11 +15,13 @@ struct EmailTemplateAttachmentsController: BespinController {
         log.info("EmailTemplateAttachmentsController.createHandler")
         let id = try req.parameters.next(Token.self)
         log.info("after token")
+        log.info(Bespin.Storage_Key)
+        log.info(Bespin.Storage_Secret)
         return try req.parameters.next(EmailTemplate.self).flatMap({ (template) -> EventLoopFuture<EmailTemplateAttachment> in
             log.info(template.name)
             entity.templateID = template.id!
             let data = Data(base64Encoded: entity.data)!
-            return try Storage.upload(bytes: data, fileName: entity.filename, fileExtension: nil, mime: nil, folder: template.id?.uuidString, on: req).flatMap({ (path) -> EventLoopFuture<EmailTemplateAttachment> in
+            return try Storage.upload(bytes: data, fileName: entity.filename, fileExtension: nil, mime: nil, folder: template.id?.uuidString, access: .authenticatedRead, on: req).flatMap({ (path) -> EventLoopFuture<EmailTemplateAttachment> in
                 //TODO: FUTURE STORE THE PATH ONLY
                 entity.path = path
                 

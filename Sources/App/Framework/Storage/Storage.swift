@@ -24,11 +24,11 @@ public class Storage {
      */
     @discardableResult
     public static func upload(
-        entity: inout FileEntity,
+        entity: inout FileEntity, access: AccessControlList,
         on container: Container
     ) throws -> Future<String> {
         let networkDriver = try container.make(NetworkDriver.self)
-        return try networkDriver.upload(entity: &entity, on: container)
+        return try networkDriver.upload(entity: &entity, access: access, on: container)
     }
 
     /**
@@ -49,7 +49,7 @@ public class Storage {
         fileName: String? = nil,
         fileExtension: String? = nil,
         mime: String? = nil,
-        folder: String? = nil,
+        folder: String? = nil, access: AccessControlList = .publicRead,
         on container: Container
     ) throws -> Future<String> {
         var entity = FileEntity(
@@ -60,7 +60,7 @@ public class Storage {
             mime: mime
         )
 
-        return try upload(entity: &entity, on: container)
+        return try upload(entity: &entity, access: access, on: container)
     }
 
     /**

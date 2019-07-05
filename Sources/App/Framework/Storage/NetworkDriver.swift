@@ -6,7 +6,7 @@ public protocol NetworkDriver: Service {
     var pathBuilder: PathBuilder { get set }
 
     @discardableResult
-    func upload(entity: inout FileEntity, on container: Container) throws -> Future<String>
+    func upload(entity: inout FileEntity, access: AccessControlList, on container: Container) throws -> Future<String>
     func get(path: String, on container: Container) throws -> Future<[UInt8]>
     func delete(path: String, on container: Container) throws -> Future<Void>
 }
