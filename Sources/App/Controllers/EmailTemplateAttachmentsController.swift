@@ -82,7 +82,14 @@ struct EmailTemplateAttachmentsController: BespinController {
     func deleteHandler(_ req: Request) throws -> EventLoopFuture<HTTPStatus> {
         let id = try req.parameters.next(Token.self)
         _ = try req.parameters.next(EmailTemplate.self)
-        return try req.parameters.next(T.self).delete(on: req).transform(to: HTTPStatus.noContent)
+        
+        return try req.parameters.next(T.self).flatMap({ (attachment) -> EventLoopFuture<HTTPStatus> in
+            if let path = attachment.path {
+                try Storage.delete(path: path, on: req)
+            }
+            return attachment.delete(on: req).transform(to: HTTPStatus.noContent)
+        })
+        
     }
     
     typealias T = EmailTemplateAttachment
