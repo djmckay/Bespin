@@ -125,29 +125,24 @@ struct MessagesController: RouteCollection {
                     if let templateAttachments = template?.attachments {
                         var storageResults: [Future<EmailTemplateAttachment>] = []
                         return try templateAttachments.query(on: req).all().flatMap({ (attachments) -> EventLoopFuture<Response> in
-                            let messageAttachments = try attachments.compactMap({ (attachment) -> EmailAttachment in
-                                
+                            var storageResults: [Future<EmailAttachment>] = []
+                            try attachments.forEach({ (attachment) in
                                 if let path = attachment.path {
                                     
-                                    let storageData = try Storage.get(path: path, on: req).flatMap({ (bytes) -> EventLoopFuture<String?> in
-                                        let data = Data(bytes: bytes, count: bytes.count)
-                                        
-                                        return req.future(data.base64EncodedString())
-                                    }).flatMap({ (string) -> EventLoopFuture<EmailTemplateAttachment> in
-                                        if let string = string {
-                                            attachment.data = string
-                                        }
-                                        return req.future(attachment)
+                                    let storageData = try Storage.get(path: path, on: req).flatMap({ (bytes) -> EventLoopFuture<EmailAttachment> in
+                                        return req.future(EmailAttachment(data: Data(bytes), filename: attachment.filename))
                                     })
                                     storageResults.append(storageData)
                                 }
+                            })
+                            return storageResults.flatten(on: req).flatMap({ (messageAttachments) -> EventLoopFuture<Response> in
                                 
-                                return EmailAttachment(data: attachment.data!, filename: attachment.filename)
+                                let mailgunEmail = MailgunEmailPlus(from: entity.from, replyTo: EmailAddress(email: entity.replyTo ?? ""), cc: ccAddresses, bcc: bccAddresses, to: toAddresses, text: text, html: html, subject: subject, attachments: entity.attachments ?? messageAttachments, deliveryTime: entity.deliveryTime, data: entity.data, testmode: entity.testmode)
+                                
+                                return try mailgun.send(apiKey: token.token, domain: user.domain, mailgunEmail, on: req)
                             })
                             
-                            let mailgunEmail = MailgunEmailPlus(from: entity.from, replyTo: EmailAddress(email: entity.replyTo ?? ""), cc: ccAddresses, bcc: bccAddresses, to: toAddresses, text: text, html: html, subject: subject, attachments: entity.attachments ?? messageAttachments, deliveryTime: entity.deliveryTime, data: entity.data, testmode: entity.testmode)
                             
-                            return try mailgun.send(apiKey: token.token, domain: user.domain, mailgunEmail, on: req)
                         })
                     } else {
                         let mailgunEmail = MailgunEmailPlus(from: entity.from, replyTo: EmailAddress(email: entity.replyTo ?? ""), cc: ccAddresses, bcc: bccAddresses, to: toAddresses, text: text, html: html, subject: subject, attachments: entity.attachments, deliveryTime: entity.deliveryTime, data: entity.data, testmode: entity.testmode)

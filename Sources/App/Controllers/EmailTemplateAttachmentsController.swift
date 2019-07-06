@@ -44,8 +44,8 @@ struct EmailTemplateAttachmentsController: BespinController {
                         let storageData = try Storage.get(path: path, on: req).flatMap({ (bytes) -> EventLoopFuture<String?> in
                             log.info("Storage get bytes: \(bytes.count)")
                             let data = Data(bytes: bytes, count: bytes.count)
-
-                            return req.future(data.base64EncodedString())
+                            let string = String(data: data, encoding: .utf8)
+                            return req.future(string)
                         }).flatMap({ (string) -> EventLoopFuture<EmailTemplateAttachment> in
                             if let string = string {
                                 attachment.data = string
