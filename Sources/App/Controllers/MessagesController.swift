@@ -216,14 +216,8 @@ struct MessagesController: RouteCollection {
                                 if let path = attachment.path {
                                     
                                     let storageData = try Storage.get(path: path, on: req).flatMap({ (bytes) -> EventLoopFuture<EmailAttachment> in
-                                        //let data = Data(bytes: bytes, count: bytes.count)
                                         return req.future(EmailAttachment(data: bytes, filename: attachment.filename))
-                                        //return req.future(data)
                                     })
-//                                        .flatMap({ (data) -> EventLoopFuture<EmailAttachment> in
-//                                        
-//                                        return req.future(EmailAttachment(data: data, filename: attachment.filename))
-//                                    })
                                     storageResults.append(storageData)
                                 }
                             })
