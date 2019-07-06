@@ -119,7 +119,7 @@ struct EmailTemplateAttachmentsController: BespinController {
         let route = router.grouped(BespinApi.path, Token.parameter, EmailTemplateController.path, EmailTemplate.parameter, EmailTemplateAttachmentsController.path)
         let protectedRoutes = route.grouped(JWTMiddleWareProvider())
         protectedRoutes.get(T.parameter, use: getHandler)
-        protectedRoutes.get(use: getAllHandler)
+        protectedRoutes.get(use: getAllHandlerAsAttachment)
         protectedRoutes.post(T.self, use: createHandler)
         protectedRoutes.put(T.parameter, use: updateHandler)
         protectedRoutes.delete(T.parameter, use: deleteHandler)
