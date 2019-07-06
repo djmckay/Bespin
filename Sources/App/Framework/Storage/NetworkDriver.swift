@@ -127,6 +127,7 @@ public final class S3Driver: NetworkDriver {
         return try s3.delete(file: path, container: container).map({ (response) -> () in
             log.info("Delete status \(response.http.status)")
             guard response.http.status == .ok else {
+                log.info("Delete failed: \(response.http.body.description)")
                 throw Abort(.internalServerError, reason: response.http.body.description)
             }
             

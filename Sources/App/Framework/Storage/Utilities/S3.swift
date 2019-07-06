@@ -369,7 +369,6 @@ public struct S3: Service {
         let req = Request(using: container)
         req.http.method = .GET
         req.http.headers = headers
-        //req.http.body = HTTPBody(data: bytes)
         req.http.url = url
         return client.send(req)
     }
@@ -390,7 +389,6 @@ public struct S3: Service {
         let req = Request(using: container)
         req.http.method = .DELETE
         req.http.headers = headers
-        //req.http.body = HTTPBody(data: bytes)
         req.http.url = url
         return client.send(req)
     }

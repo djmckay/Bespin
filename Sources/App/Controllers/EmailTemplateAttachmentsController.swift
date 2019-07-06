@@ -85,9 +85,12 @@ struct EmailTemplateAttachmentsController: BespinController {
         
         return try req.parameters.next(T.self).flatMap({ (attachment) -> EventLoopFuture<HTTPStatus> in
             if let path = attachment.path {
-                try Storage.delete(path: path, on: req)
+                return try Storage.delete(path: path, on: req).flatMap({ () -> EventLoopFuture<HTTPStatus> in
+                    return attachment.delete(on: req).transform(to: HTTPStatus.noContent)
+                })
+            } else {
+                return attachment.delete(on: req).transform(to: HTTPStatus.noContent)
             }
-            return attachment.delete(on: req).transform(to: HTTPStatus.noContent)
         })
         
     }
