@@ -17,10 +17,10 @@ final class EmailTemplateAttachment: BespinModel {
     var id: UUID?
     var templateID: EmailTemplate.ID
     var filename: String
-    var data: String
+    var data: String?
     var path: String?
     
-    init(filename: String, data: String, templateID: EmailTemplate.ID) {
+    init(filename: String, data: String?, templateID: EmailTemplate.ID) {
         self.filename = filename
         self.data = data
         self.templateID = templateID
