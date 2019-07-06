@@ -12,11 +12,7 @@ import JWT
 struct EmailTemplateAttachmentsController: BespinController {
     func createHandler(_ req: Request, entity: EmailTemplateAttachment) throws -> EventLoopFuture<EmailTemplateAttachment> {
         let log: Logger = try req.make(Logger.self)
-        log.info("EmailTemplateAttachmentsController.createHandler")
         let id = try req.parameters.next(Token.self)
-        log.info("after token")
-        log.info(Bespin.Storage_Key)
-        log.info(Bespin.Storage_Secret)
         return try req.parameters.next(EmailTemplate.self).flatMap({ (template) -> EventLoopFuture<EmailTemplateAttachment> in
             log.info(template.name)
             entity.templateID = template.id!
@@ -32,6 +28,27 @@ struct EmailTemplateAttachmentsController: BespinController {
         })
     }
     
+    func getAllHandlerAsAttachment(_ req: Request) throws -> EventLoopFuture<[Attachment]> {
+        let id = try req.parameters.next(Token.self)
+        let log: Logger = try req.make(Logger.self)
+        return try req.parameters.next(EmailTemplate.self).flatMap({ (template) -> EventLoopFuture<[Attachment]> in
+            return try template.attachments.query(on: req).all().flatMap({ (attachments) -> EventLoopFuture<[Attachment]> in
+                var storageResults: [Future<Attachment>] = []
+                try attachments.forEach({ (attachment) in
+                    if let path = attachment.path {
+                        
+                        let storageData = try Storage.get(path: path, on: req).flatMap({ (bytes) -> EventLoopFuture<Attachment> in
+                            log.info("Storage get bytes: \(bytes.count)")
+                            return req.future(Attachment(id: attachment.id, templateID: attachment.templateID, filename: attachment.filename, data: Data(bytes), path: attachment.path))
+                        })
+                        storageResults.append(storageData)
+                    }
+                })
+                return storageResults.flatten(on: req)
+            })
+        })
+    }
+    
     func getAllHandler(_ req: Request) throws -> EventLoopFuture<[EmailTemplateAttachment]> {
         let id = try req.parameters.next(Token.self)
         let log: Logger = try req.make(Logger.self)
@@ -44,8 +61,7 @@ struct EmailTemplateAttachmentsController: BespinController {
                         let storageData = try Storage.get(path: path, on: req).flatMap({ (bytes) -> EventLoopFuture<String?> in
                             log.info("Storage get bytes: \(bytes.count)")
                             let data = Data(bytes: bytes, count: bytes.count)
-                            let string = String(data: data, encoding: .utf8)
-                            return req.future(string)
+                            return req.future(data.base64EncodedString())
                         }).flatMap({ (string) -> EventLoopFuture<EmailTemplateAttachment> in
                             if let string = string {
                                 attachment.data = string
