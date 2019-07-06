@@ -84,14 +84,22 @@ struct EmailTemplateAttachmentsController: BespinController {
     }
     
     func updateHandler(_ req: Request) throws -> EventLoopFuture<EmailTemplateAttachment> {
+        
         let id = try req.parameters.next(Token.self)
         print(id)
         return try flatMap(to: T.self,
                            req.parameters.next(T.self),
                            req.content.decode(T.self)) { item, updatedItem in
-                            item.filename = updatedItem.filename
-                            item.data = updatedItem.data
-                            return item.save(on: req)
+                            
+                            let data = Data(base64Encoded: updatedItem.data!)!
+                            return try Storage.upload(bytes: data, fileName: updatedItem.filename, fileExtension: nil, mime: nil, folder: item.templateID.uuidString, access: .privateAccess, on: req).flatMap({ (path) -> EventLoopFuture<EmailTemplateAttachment> in
+                                //TODO: FUTURE STORE THE PATH ONLY
+                                item.path = path
+                                item.data = nil
+                                item.filename = updatedItem.filename
+                                return item.save(on: req)
+                            })
+                            
         }
     }
     
