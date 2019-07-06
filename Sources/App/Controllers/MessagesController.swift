@@ -211,27 +211,24 @@ struct MessagesController: RouteCollection {
                             
                         }
                         return try template.attachments.query(on: req).all().flatMap({ (attachments) -> EventLoopFuture<Response> in
-                            var storageResults: [Future<EmailTemplateAttachment>] = []
+                            var storageResults: [Future<EmailAttachment>] = []
                             try attachments.forEach({ (attachment) in
                                 if let path = attachment.path {
                                     
-                                    let storageData = try Storage.get(path: path, on: req).flatMap({ (bytes) -> EventLoopFuture<String?> in
-                                        let data = Data(bytes: bytes, count: bytes.count)
-                                        
-                                        return req.future(data.base64EncodedString())
-                                    }).flatMap({ (string) -> EventLoopFuture<EmailTemplateAttachment> in
-                                        if let string = string {
-                                            attachment.data = string
-                                        }
-                                        return req.future(attachment)
+                                    let storageData = try Storage.get(path: path, on: req).flatMap({ (bytes) -> EventLoopFuture<EmailAttachment> in
+                                        //let data = Data(bytes: bytes, count: bytes.count)
+                                        return req.future(EmailAttachment(data: bytes, filename: attachment.filename))
+                                        //return req.future(data)
                                     })
+//                                        .flatMap({ (data) -> EventLoopFuture<EmailAttachment> in
+//                                        
+//                                        return req.future(EmailAttachment(data: data, filename: attachment.filename))
+//                                    })
                                     storageResults.append(storageData)
                                 }
                             })
-                            return storageResults.flatten(on: req).flatMap({ (attachments) -> EventLoopFuture<Response> in
-                                let messageAttachments = attachments.compactMap({ (attachment) -> EmailAttachment in
-                                    return EmailAttachment(data: attachment.data!, filename: attachment.filename)
-                                })
+                            return storageResults.flatten(on: req).flatMap({ (messageAttachments) -> EventLoopFuture<Response> in
+                                
                                 let mailgunEmail = MailgunEmail(from: entity.from?.email ?? template.from, replyTo: entity.replyTo ?? templateReplyTo, cc: entity.cc ?? templateCc, bcc: entity.bcc ?? templateBcc, to: entity.to, text: template.text, html: template.html, subject: entity.subject ?? template.subject, attachments: entity.attachments ?? messageAttachments, recipientVariables: entity.recipientVariables, deliveryTime: entity.deliveryTime, testmode: entity.testmode)
                                 
                                 return try mailgun.send(apiKey: token.token, domain: user.domain, mailgunEmail, on: req)
