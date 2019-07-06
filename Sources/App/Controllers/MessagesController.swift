@@ -136,8 +136,9 @@ struct MessagesController: RouteCollection {
                                 }
                             })
                             return storageResults.flatten(on: req).flatMap({ (messageAttachments) -> EventLoopFuture<Response> in
-                                
-                                let mailgunEmail = MailgunEmailPlus(from: entity.from, replyTo: EmailAddress(email: entity.replyTo ?? ""), cc: ccAddresses, bcc: bccAddresses, to: toAddresses, text: text, html: html, subject: subject, attachments: entity.attachments ?? messageAttachments, deliveryTime: entity.deliveryTime, data: entity.data, testmode: entity.testmode)
+                                var sendAttachments:[EmailAttachment] = messageAttachments
+                                sendAttachments.append(contentsOf: entity.attachments ?? [])
+                                let mailgunEmail = MailgunEmailPlus(from: entity.from, replyTo: EmailAddress(email: entity.replyTo ?? ""), cc: ccAddresses, bcc: bccAddresses, to: toAddresses, text: text, html: html, subject: subject, attachments: sendAttachments, deliveryTime: entity.deliveryTime, data: entity.data, testmode: entity.testmode)
                                 
                                 return try mailgun.send(apiKey: token.token, domain: user.domain, mailgunEmail, on: req)
                             })
@@ -217,8 +218,9 @@ struct MessagesController: RouteCollection {
                                 }
                             })
                             return storageResults.flatten(on: req).flatMap({ (messageAttachments) -> EventLoopFuture<Response> in
-                                
-                                let mailgunEmail = MailgunEmail(from: entity.from?.email ?? template.from, replyTo: entity.replyTo ?? templateReplyTo, cc: entity.cc ?? templateCc, bcc: entity.bcc ?? templateBcc, to: entity.to, text: template.text, html: template.html, subject: entity.subject ?? template.subject, attachments: entity.attachments ?? messageAttachments, recipientVariables: entity.recipientVariables, deliveryTime: entity.deliveryTime, testmode: entity.testmode)
+                                var sendAttachments:[EmailAttachment] = messageAttachments
+                                sendAttachments.append(contentsOf: entity.attachments ?? [])
+                                let mailgunEmail = MailgunEmail(from: entity.from?.email ?? template.from, replyTo: entity.replyTo ?? templateReplyTo, cc: entity.cc ?? templateCc, bcc: entity.bcc ?? templateBcc, to: entity.to, text: template.text, html: template.html, subject: entity.subject ?? template.subject, attachments: sendAttachments, recipientVariables: entity.recipientVariables, deliveryTime: entity.deliveryTime, testmode: entity.testmode)
                                 
                                 return try mailgun.send(apiKey: token.token, domain: user.domain, mailgunEmail, on: req)
                             })
