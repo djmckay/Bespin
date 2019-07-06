@@ -378,7 +378,7 @@ public struct S3: Service {
             throw Error.invalidPath
         }
         let contentType: String = "application/x-www-form-urlencoded; charset=utf-8"
-        let signedHeaders = try signer.sign(contentType: contentType, path: file)
+        let signedHeaders = try signer.sign(contentType: contentType, method: .delete, path: file)
         
         var headers: HTTPHeaders = [:]
         signedHeaders.forEach {
