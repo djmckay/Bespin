@@ -169,6 +169,7 @@ struct MessagesController: RouteCollection {
     }
     
     func createHandler(_ req: Request, entity: Message) throws -> EventLoopFuture<MessageResponse> {
+        let log: Logger = try req.make(Logger.self)
         return try req.parameters.next(Token.self).flatMap({ (token) -> EventLoopFuture<Response> in
             return token.user.get(on: req).flatMap({ (user) -> EventLoopFuture<Response> in
                 let bearer = req.http.headers.bearerAuthorization!
@@ -176,6 +177,7 @@ struct MessagesController: RouteCollection {
                 guard jwt.payload.domain == user.domain else {
                     throw MailgunClient.Error.authenticationFailed
                 }
+                log.info("Create Message with \(entity.template ?? "no template")")
                 if let template = entity.template {
                     let id = UUID(uuidString: template)!
                     return EmailTemplate.find(id, on: req).flatMap({ (template) -> EventLoopFuture<Response> in
