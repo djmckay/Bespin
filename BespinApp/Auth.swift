@@ -69,7 +69,7 @@ class Auth {
         self.resourceURL = resourceURL
     }
     
-    static let baseURL = "https://bespin-mail-api.vapor.cloud/api/users/"
+    static let baseURL = "https://djmckay-tech-bespin.herokuapp.com/api/users/"
     
     func checkUser() -> Bool {
         if let loggedInUser = UserDefaultsManager.loggedInUser {

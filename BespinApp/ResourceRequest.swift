@@ -28,7 +28,7 @@ enum DeleteResult<ResourceType> {
 }
 
 struct ResourceRequest<ResourceType> where ResourceType: Codable {
-    let baseURL = "https://bespin-mail-api.vapor.cloud/api/"
+    let baseURL = "https://djmckay-tech-bespin.herokuapp.com/api/"
     let resourceURL: URL
     
     init(resourcePath: String) {

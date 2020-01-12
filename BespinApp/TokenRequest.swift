@@ -60,7 +60,7 @@ struct TokenRequest {
     var token: Token!
     
     init(token: Token) {
-        let resourceString = "https://bespin-mail-api.vapor.cloud/api/\(token.id!.uuidString)"
+        let resourceString = "https:/djmckay-tech-bespin.herokuapp.com/api/\(token.id!.uuidString)"
         guard let resourceURL = URL(string: resourceString) else {
             fatalError()
         }

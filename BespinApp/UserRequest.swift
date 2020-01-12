@@ -19,7 +19,7 @@ struct UserRequest {
     let userID: String!
     
     init(userID: UUID) {
-        let resourceString = "https://bespin-mail-api.vapor.cloud/api/users/\(userID.uuidString)"
+        let resourceString = "https://djmckay-tech-bespin.herokuapp.com/api/users/\(userID.uuidString)"
         guard let resourceURL = URL(string: resourceString) else {
             fatalError()
         }
