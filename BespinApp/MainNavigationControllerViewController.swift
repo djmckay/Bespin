@@ -53,6 +53,7 @@ class MainNavigationControllerViewController: UINavigationController {
     
     @objc func presentBespinController() {
         let bespinController = UIStoryboard(name:"Main", bundle:nil).instantiateViewController(withIdentifier: "BespinController")
+        bespinController.modalPresentationStyle = .fullScreen
         present(bespinController, animated: true, completion: nil)
     }
     
